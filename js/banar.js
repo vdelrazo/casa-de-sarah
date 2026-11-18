@@ -87,7 +87,8 @@ function secar(p, ctx) {
   sonar('frotar', 120, ctx);
   if (e.secado >= SECADO) {
     e.terminado = true;
-    ctx.bebe.ropa('toalla');
+    ctx.bebe.modo('toalla');
+    ctx.quitarRopa();   // la ropa se fue a lavar: queda en pañal hasta que lo vistan
     ctx.terminar();
   }
 }

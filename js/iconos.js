@@ -1,5 +1,7 @@
 // Dibujos de los botones y de las herramientas, todos en una caja de 100 × 100.
 
+import { ICONO_MAMELUCO } from './ropa-bebe.js';
+
 const svg = (contenido) => `<svg viewBox="0 0 100 100" aria-hidden="true">${contenido}</svg>`;
 
 // ---------- Actividades (barra de abajo y burbuja de pedidos) ----------
@@ -30,6 +32,7 @@ export const ICONO_ACTIVIDAD = {
     <rect x="42" y="62" width="16" height="25" rx="5" fill="#ff7eb9"/>`),
   comer: svg(biberon(1)),
   banar: svg(PATITO),
+  vestir: ICONO_MAMELUCO,
   dormir: svg(`
     <path d="M 58 12 A 38 38 0 1 0 88 66 A 30 30 0 1 1 58 12 Z" fill="#ffd84d" stroke="#d9a81c" stroke-width="4" stroke-linejoin="round"/>
     <path d="M 78 14 L 81 22 L 89 23 L 83 28 L 85 36 L 78 32 L 71 36 L 73 28 L 67 23 L 75 22 Z" fill="#b49cff"/>`),

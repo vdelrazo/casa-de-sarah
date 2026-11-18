@@ -115,7 +115,7 @@ const PATITO_TINA = `
 export const LUGARES = {
   casa: {
     fondo: 'cuarto',
-    bebe: { x: 300, y: 588, pose: 'sentado', ropa: 'mameluco' },
+    bebe: { x: 300, y: 588, pose: 'sentado', modo: 'puesta' },
     atras: `
       <ellipse cx="300" cy="594" rx="270" ry="44" fill="#c9f0e0"/>
       <ellipse cx="300" cy="594" rx="238" ry="32" fill="none" stroke="#ffffff" stroke-width="5" stroke-dasharray="14 12"/>
@@ -130,7 +130,7 @@ export const LUGARES = {
 
   comer: {
     fondo: 'cocina',
-    bebe: { x: 300, y: 540, pose: 'sentado', ropa: 'babero' },
+    bebe: { x: 300, y: 540, pose: 'sentado', modo: 'puesta', babero: true },
     atras: `
       <path d="M 156 640 L 196 540 M 444 640 L 404 540" stroke="#e07aa5" stroke-width="16" stroke-linecap="round"/>
       <path d="M 186 548 L 186 250 Q 186 186 250 186 L 350 186 Q 414 186 414 250 L 414 548 Z" fill="#ff9fc4" stroke="#e07aa5" stroke-width="6" stroke-linejoin="round"/>
@@ -145,7 +145,7 @@ export const LUGARES = {
 
   banar: {
     fondo: 'bano',
-    bebe: { x: 300, y: 592, pose: 'sentado', ropa: 'nada' },
+    bebe: { x: 300, y: 592, pose: 'sentado', modo: 'nada' },
     atras: '<ellipse cx="300" cy="484" rx="262" ry="30" fill="#d9f0ff" stroke="#9cc9e8" stroke-width="5"/>',
     frente: `
       <path d="M 48 488 Q 110 470 172 488 T 296 488 T 420 488 T 552 488 L 552 512 L 48 512 Z" fill="#9ad8ff" opacity="0.92"/>
@@ -159,9 +159,25 @@ export const LUGARES = {
       <g transform="translate(430 410) scale(0.8)">${PATITO_TINA}</g>`,
   },
 
+  vestir: {
+    fondo: 'cuarto',
+    bebe: { x: 300, y: 540, pose: 'sentado', modo: 'puesta' },
+    atras: `
+      <path d="M 130 120 Q 300 150 470 120" fill="none" stroke="#d6a3c1" stroke-width="4"/>
+      <path d="M 170 128 L 170 160 M 300 140 L 300 172 M 430 128 L 430 160" stroke="#d6a3c1" stroke-width="3"/>
+      <circle cx="170" cy="170" r="12" fill="#ffd84d"/><circle cx="300" cy="182" r="12" fill="#ff8cc6"/><circle cx="430" cy="170" r="12" fill="#9ad8ff"/>`,
+    frente: `
+      <rect x="92" y="574" width="416" height="100" rx="14" fill="#ffffff" stroke="#e6a8c8" stroke-width="6"/>
+      <path d="M 92 612 L 508 612 M 300 574 L 300 674" stroke="#e6a8c8" stroke-width="5"/>
+      <circle cx="196" cy="593" r="8" fill="#ff8cc6"/><circle cx="404" cy="593" r="8" fill="#ff8cc6"/>
+      <circle cx="196" cy="632" r="8" fill="#ff8cc6"/><circle cx="404" cy="632" r="8" fill="#ff8cc6"/>
+      <rect x="104" y="550" width="392" height="32" rx="16" fill="#ffd0e3" stroke="#e6a8c8" stroke-width="5"/>
+      <g fill="#ffffff" opacity="0.8"><circle cx="140" cy="566" r="4"/><circle cx="190" cy="566" r="4"/><circle cx="410" cy="566" r="4"/><circle cx="460" cy="566" r="4"/></g>`,
+  },
+
   dormir: {
     fondo: 'cuarto',
-    bebe: { x: 300, y: 560, pose: 'acostado', ropa: 'cobija' },
+    bebe: { x: 300, y: 560, pose: 'acostado', modo: 'cobija' },
     atras: `
       <path d="M 96 432 Q 90 168 300 158 Q 510 168 504 432 Z" fill="#e9e0ff" stroke="#b49cff" stroke-width="5" stroke-linejoin="round"/>
       <path d="M 130 420 Q 126 200 300 192 Q 474 200 470 420 Z" fill="#f4efff"/>

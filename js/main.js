@@ -4,15 +4,17 @@
 import { crearBebe } from './bebe.js';
 import { dibujarFondo, LUGARES } from './escenas.js';
 import { ICONO_ACTIVIDAD, HERRAMIENTAS, MANITA, ESTRELLA, SOL } from './iconos.js';
+import { prendaPorId, ROPA_INICIAL } from './ropa-bebe.js';
 import * as sonido from './sonido.js';
 import casa from './casa.js';
 import comer from './comer.js';
 import banar from './banar.js';
+import vestir from './vestir.js';
 import dormir from './dormir.js';
 
-const ACTIVIDADES = { casa, comer, banar, dormir };
-const BARRA = ['casa', 'comer', 'banar', 'dormir'];
-const CICLO = ['comer', 'banar', 'dormir'];   // lo que el bebé va pidiendo, en orden
+const ACTIVIDADES = { casa, comer, banar, vestir, dormir };
+const BARRA = ['casa', 'comer', 'banar', 'vestir', 'dormir'];
+const CICLO = ['comer', 'banar', 'vestir', 'dormir'];   // lo que el bebé va pidiendo, en orden
 const CLAVE = 'casa-de-sarah.bebe';
 const ESPERA_PISTA = 6000;   // ms sin tocar nada antes de que salga la manita
 const LEVANTAR = 36;          // la herramienta va un poco arriba del dedo, para que se vea
@@ -28,12 +30,20 @@ function cargar() {
   try {
     localStorage.removeItem('casa-de-sarah.ropa');   // del vestidor anterior
     const g = JSON.parse(localStorage.getItem(CLAVE) || '{}');
+    const ropa = { ...ROPA_INICIAL };
+    if (g.ropa && typeof g.ropa === 'object') {
+      for (const lugar of Object.keys(ropa)) {
+        const p = prendaPorId(g.ropa[lugar]);
+        ropa[lugar] = p && p.cajon === lugar ? p.id : null;
+      }
+    }
     return {
       estrellas: Number.isInteger(g.estrellas) && g.estrellas >= 0 ? g.estrellas : 0,
       pide: CICLO.includes(g.pide) ? g.pide : 'comer',
+      ropa,
     };
   } catch {
-    return { estrellas: 0, pide: 'comer' };
+    return { estrellas: 0, pide: 'comer', ropa: { ...ROPA_INICIAL } };
   }
 }
 
@@ -50,7 +60,7 @@ const estado = cargar();
 escena.setAttribute('viewBox', '0 0 600 640');
 escena.setAttribute('preserveAspectRatio', 'xMidYMax meet');
 escena.innerHTML = `
-  <g id="mecedora"><g id="atras"></g><g id="bebe-pos"></g><g id="frente"></g></g>
+  <g id="mecedora"><g id="aura"></g><g id="atras"></g><g id="bebe-pos"></g><g id="frente"></g></g>
   <g id="fijos"></g><g id="efectos"></g><g id="globo"></g>`;
 
 const bebe = crearBebe($('bebe-pos'));
@@ -87,6 +97,34 @@ const ctx = {
   dibujarGlobo: () => dibujarGlobo(),
   mostrarSol: (si) => { $('btn-sol').hidden = !si; },
   repasar,
+
+  // Ropa del bebé: { ropa, cabeza, pies }.
+  ropa: () => estado.ropa,
+  cambiarRopa(lugar, id) {
+    estado.ropa[lugar] = id;
+    guardar();
+    bebe.vestir(estado.ropa);
+  },
+  quitarRopa() {
+    estado.ropa = { ropa: null, cabeza: null, pies: null };
+    guardar();
+    bebe.vestir(estado.ropa);
+  },
+
+  arrastrable,
+  fantasma: (html) => crearFantasma(html),
+  /** Brillo detrás del bebé mientras se le acerca algo para ponérselo. */
+  resaltarBebe(si) {
+    const b = LUGARES[actual.id].bebe;
+    $('aura').innerHTML = si
+      ? `<ellipse class="aura" cx="${b.x}" cy="${b.y - 230}" rx="215" ry="270"/>`
+      : '';
+  },
+  /** Enseña un movimiento con la manita de inmediato. */
+  ensenar(p) {
+    ocultarManita();
+    mostrarManita(p);
+  },
 };
 
 function irA(id) {
@@ -108,8 +146,10 @@ function irA(id) {
   $('btn-sol').hidden = true;
 
   $('bebe-pos').setAttribute('transform', `translate(${lugar.bebe.x} ${lugar.bebe.y})`);
+  $('aura').innerHTML = '';
   bebe.pose(lugar.bebe.pose);
-  bebe.ropa(lugar.bebe.ropa);
+  bebe.modo(lugar.bebe.modo);
+  bebe.babero(!!lugar.bebe.babero);
   bebe.sueno(0);
   bebe.hipo(false);
   bebe.manchas([]);
@@ -147,19 +187,98 @@ function marcarBarra() {
   }
 }
 
-// ---------- Herramientas que se arrastran ----------
+// ---------- Herramientas y ropa que se arrastran ----------
 
 const iconoDe = (id) => actual.icono?.(id) ?? HERRAMIENTAS[id].icono();
-let fantasma = null;   // { id, el }
+let fantasma = null;   // lo que va en el dedo: { id, el, mover, quitar }
+
+/** Dibujo que sigue al dedo. Su `punta` (en la caja de 100 × 100) queda un poco arriba del dedo. */
+function crearFantasma(html, punta = [50, 50], id = null) {
+  const tam = 150;
+  const el = document.createElement('div');
+  el.className = 'fantasma';
+  el.innerHTML = html;
+  document.body.append(el);
+  const f = {
+    id,
+    el,
+    mover(x, y) {
+      el.style.transform = `translate(${x - (punta[0] / 100) * tam}px, ${y - LEVANTAR - (punta[1] / 100) * tam}px)`;
+    },
+    quitar() {
+      el.remove();
+      if (fantasma === f) fantasma = null;
+    },
+  };
+  fantasma?.quitar();
+  fantasma = f;
+  return f;
+}
+
+/**
+ * Hace que un botón se pueda arrastrar. Mientras se mueve llama alMover(punto de la escena);
+ * al soltar, alSoltar(punto, cancelado). Si casi no se movió y hay alTocar, llama alTocar().
+ */
+function arrastrable(boton, { icono, punta = [50, 50], alMover, alSoltar, alTocar }) {
+  let dedo = null;
+  let inicio = null;
+  let movio = false;
+  let f = null;
+  const enEscena = (e) => aEscena(e.clientX, e.clientY - LEVANTAR);
+
+  boton.addEventListener('pointerdown', (e) => {
+    if (dedo !== null || fantasma) return;
+    tocoAlgo();
+    dedo = e.pointerId;
+    inicio = { x: e.clientX, y: e.clientY };
+    movio = false;
+    boton.setPointerCapture(e.pointerId);
+    f = crearFantasma(icono(), punta, boton.dataset.id);
+    f.mover(e.clientX, e.clientY);
+    boton.classList.add('en-uso');
+    sonido.tomar();
+  });
+
+  boton.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== dedo) return;
+    f.mover(e.clientX, e.clientY);
+    if (Math.hypot(e.clientX - inicio.x, e.clientY - inicio.y) > 12) movio = true;
+    alMover?.(enEscena(e));
+  });
+
+  const soltar = (e, cancelado) => {
+    if (e.pointerId !== dedo) return;
+    dedo = null;
+    f.quitar();
+    boton.classList.remove('en-uso');
+    tocoAlgo();   // antes de alTocar, que puede encender la manita a propósito
+    if (!movio && !cancelado && alTocar) alTocar();
+    else alSoltar?.(enEscena(e), cancelado);
+    repasar();
+  };
+  boton.addEventListener('pointerup', (e) => soltar(e, false));
+  boton.addEventListener('pointercancel', (e) => soltar(e, true));
+}
 
 function mostrarHerramientas() {
-  $('herramientas').replaceChildren(...actual.herramientas.map((id) => {
+  const caja = $('herramientas');
+  caja.classList.toggle('con-ropero', !!actual.panel);
+  if (actual.panel) {
+    actual.panel(ctx, caja);
+    return;
+  }
+  caja.replaceChildren(...actual.herramientas.map((id) => {
     const b = document.createElement('button');
     b.className = 'herramienta';
     b.dataset.id = id;
     b.setAttribute('aria-label', id);
     b.innerHTML = iconoDe(id);
-    manejarHerramienta(b, id);
+    arrastrable(b, {
+      icono: () => iconoDe(id),
+      punta: HERRAMIENTAS[id].punta,
+      alMover: (p) => actual.alMover?.(id, p, ctx),
+      alSoltar: (p) => actual.alSoltar?.(id, p, ctx),
+    });
     return b;
   }));
 }
@@ -171,59 +290,14 @@ function refrescarHerramienta(id) {
   if (fantasma?.id === id) fantasma.el.innerHTML = icono;
 }
 
-function manejarHerramienta(boton, id) {
-  let dedo = null;
-  const [px, py] = HERRAMIENTAS[id].punta;
-  const tam = 150;
-  // Punto que hace efecto: un poco arriba del dedo.
-  const punta = (e) => aEscena(e.clientX, e.clientY - LEVANTAR);
-  const mover = (e) => {
-    fantasma.el.style.transform =
-      `translate(${e.clientX - (px / 100) * tam}px, ${e.clientY - LEVANTAR - (py / 100) * tam}px)`;
-  };
-
-  boton.addEventListener('pointerdown', (e) => {
-    if (dedo !== null || fantasma) return;
-    tocoAlgo();
-    dedo = e.pointerId;
-    boton.setPointerCapture(e.pointerId);
-    const el = document.createElement('div');
-    el.className = 'fantasma';
-    el.innerHTML = iconoDe(id);
-    document.body.append(el);
-    fantasma = { id, el };
-    mover(e);
-    boton.classList.add('en-uso');
-    sonido.tomar();
-  });
-
-  boton.addEventListener('pointermove', (e) => {
-    if (e.pointerId !== dedo || !fantasma) return;
-    mover(e);
-    actual.alMover?.(id, punta(e), ctx);
-  });
-
-  const soltar = (e) => {
-    if (e.pointerId !== dedo) return;
-    dedo = null;
-    actual.alSoltar?.(id, punta(e), ctx);
-    fantasma?.el.remove();
-    fantasma = null;
-    boton.classList.remove('en-uso');
-    tocoAlgo();
-    repasar();
-  };
-  boton.addEventListener('pointerup', soltar);
-  boton.addEventListener('pointercancel', soltar);
-}
-
 // ---------- Toques en la escena ----------
 
-let toque = null;   // { id, x, y, arrastrando, ignorar }
+let toque = null;   // { id, x, y, p, arrastrando, ignorar }
+const cliente = (e) => ({ x: e.clientX, y: e.clientY });
 
 escena.addEventListener('pointerdown', (e) => {
   tocoAlgo();
-  if (toque) return;
+  if (toque || fantasma) return;
   const p = aEscena(e.clientX, e.clientY);
   if (globo && Math.hypot(p[0] - globo.x, p[1] - globo.y) < 80) {
     sonido.boton();
@@ -240,19 +314,19 @@ escena.addEventListener('pointermove', (e) => {
   if (!toque.arrastrando) {
     if (Math.hypot(e.clientX - toque.x, e.clientY - toque.y) < 10) return;
     toque.arrastrando = true;
-    if (!actual.alArrastrar?.(toque.p, 'inicio', ctx)) {
+    if (!actual.alArrastrar?.(toque.p, 'inicio', ctx, cliente(e))) {
       toque.ignorar = true;
       return;
     }
   }
-  actual.alArrastrar(p, 'mover', ctx);
+  actual.alArrastrar(p, 'mover', ctx, cliente(e));
 });
 
 const terminarToque = (e, cancelado) => {
   if (!toque || e.pointerId !== toque.id) return;
   const p = aEscena(e.clientX, e.clientY);
-  if (toque.arrastrando && !toque.ignorar) actual.alArrastrar(p, 'fin', ctx);
-  else if (!toque.arrastrando && !cancelado) actual.alTocar?.(p, ctx, { x: e.clientX, y: e.clientY });
+  if (toque.arrastrando && !toque.ignorar) actual.alArrastrar(p, cancelado ? 'cancelar' : 'fin', ctx, cliente(e));
+  else if (!toque.arrastrando && !cancelado) actual.alTocar?.(p, ctx, cliente(e));
   toque = null;
   repasar();
 };
@@ -418,8 +492,9 @@ function pistaActual() {
 
 function repasar() {
   const p = pistaActual();
-  for (const b of $('herramientas').children) {
-    b.classList.toggle('brilla', !!p && p.herramienta === b.dataset.id);
+  for (const b of $('herramientas').querySelectorAll('[data-id], [data-cajon]')) {
+    const brilla = Boolean(p && ((p.herramienta && p.herramienta === b.dataset.id) || (p.elemento && b.matches(p.elemento))));
+    b.classList.toggle('brilla', brilla);
   }
 }
 
@@ -440,8 +515,7 @@ function centro(el) {
   return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
 }
 
-function mostrarManita() {
-  const p = pistaActual();
+function mostrarManita(p = pistaActual()) {
   if (!p) return;
   const el = $('manita');
   // La punta del dedo de la manita está en (37, 4) de su dibujo de 100 × 100; mide 90 px.
@@ -513,6 +587,7 @@ document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 armarBarra();
 mostrarEstrellas(false);
+bebe.vestir(estado.ropa);
 irA('casa');
 
 if (new URLSearchParams(location.search).has('depurar')) {

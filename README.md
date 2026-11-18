@@ -14,13 +14,16 @@ El juego queda con su propio ícono y se abre en pantalla completa.
 
 ## Cómo se juega
 
-- Abajo están la casa, comer 🍼, bañar 🦆 y dormir 🌙. El botón que late es lo que el bebé quiere;
-  también lo dice su burbuja (tocarla lleva directo ahí).
+- Abajo están la casa, comer 🍼, bañar 🦆, vestir 👕 y dormir 🌙. El botón que late es lo que el
+  bebé quiere; también lo dice su burbuja (tocarla lleva directo ahí).
 - Las herramientas se **arrastran con el dedo** hasta el bebé. La que toca usar brilla y, si no
   se hace nada, una manita enseña el movimiento.
 - **Comer:** cuchara del plato a la boca, luego el biberón, y palmaditas hasta que eructe.
   La servilleta limpia la cara.
 - **Bañar:** jabón para quitar el lodo, regadera para quitar la espuma y toalla para secarlo.
+  Después del baño queda en pañal.
+- **Vestir:** ropero con ropa, cosas para la cabeza y zapatos. La ropa se pone arrastrándola
+  hasta el bebé y se quita jalándola del bebé hacia afuera.
 - **Dormir:** mecer la cuna (arrastrando de lado a lado o tocándola), el chupón ayuda,
   y ya dormido se apaga la lámpara. El sol lo despierta.
 - Cada cuidado terminado da una ⭐.

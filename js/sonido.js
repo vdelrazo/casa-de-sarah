@@ -185,6 +185,15 @@ export function estrella() {
     tono({ frec: f, inicio: i * 0.07, dur: 0.35, tipo: 'triangle', vol: 0.12 }));
 }
 
+/** Brillitos al ponerle una prenda. */
+export function ponerRopa() {
+  [784, 988, 1175, 1568].forEach((f, i) =>
+    tono({ frec: f, inicio: i * 0.05, dur: 0.25, tipo: 'triangle', vol: 0.11 }));
+}
+
+/** "Fiuuu" al quitarle una prenda. */
+export const quitarRopa = () => tono({ frec: 1100, hasta: 300, dur: 0.22, vol: 0.13 });
+
 export function despertar() {
   [523, 659, 784, 1047, 1319].forEach((f, i) =>
     tono({ frec: f, inicio: i * 0.08, dur: 0.3, tipo: 'triangle', vol: 0.1 }));

@@ -2,7 +2,10 @@
 // hacia arriba es negativo. La cabeza está en (0, -300) y la boca en (0, -238).
 // Cada lugar lo coloca con un translate (ver main.js).
 //
-// La cara, la pose y la ropa se cambian con atributos data-* y el CSS hace el resto.
+// La cara y la pose se cambian con atributos data-* y el CSS hace el resto.
+// La ropa viene de ropa-bebe.js; aquí solo están el pañal, el babero, la toalla y la cobija.
+
+import { prendaPorId } from './ropa-bebe.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const espejo = (svg) => `<g transform="scale(-1 1)">${svg}</g>`;
@@ -78,48 +81,32 @@ const CABEZA_SVG = `
     <ellipse cx="0" cy="-240" rx="8" ry="9" fill="#d6f1ff"/>
   </g>`;
 
-// ---------- Ropa ----------
+// ---------- Lo que no está en el ropero ----------
 
-const AMARILLO = '#ffe08a';
-const AMARILLO_BORDE = '#d9b24a';
+// Pañal: se ve cuando el bebé no trae ropa (menos en la tina).
+const PANAL = `
+  <path d="M -88 -80 Q 0 -60 88 -80 L 100 -36 Q 76 4 0 8 Q -76 4 -100 -36 Z" fill="#ffffff" stroke="#b9d6ee" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="-94" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/><rect x="70" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/>
+  <path d="M -20 -40 C -26 -46 -32 -50 -32 -56 C -32 -61 -25 -63 -20 -57 C -15 -63 -8 -61 -8 -56 C -8 -50 -14 -46 -20 -40 Z" fill="#ffc4dc"/>`;
 
-const PATITO_PECHO = `
-  <g transform="translate(0 -118) scale(0.5)">
-    <ellipse cx="6" cy="10" rx="34" ry="24" fill="#fff" stroke="${AMARILLO_BORDE}" stroke-width="5"/>
-    <circle cx="-14" cy="-18" r="18" fill="#fff" stroke="${AMARILLO_BORDE}" stroke-width="5"/>
-    <path d="M -32 -16 L -46 -10 L -32 -6 Z" fill="#ff9f43"/>
-    <circle cx="-16" cy="-22" r="3.5" fill="#3d2b4f"/>
-  </g>`;
+const BABERO = `
+  <path d="M -62 -200 Q 0 -176 62 -200 L 70 -128 Q 0 -86 -70 -128 Z" fill="#ffffff" stroke="#e58fb4" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M -60 -126 Q 0 -94 60 -126" fill="none" stroke="#ff9fc4" stroke-width="4" stroke-dasharray="3 8" stroke-linecap="round"/>
+  <path d="M 0 -128 C -9 -136 -22 -144 -22 -156 C -22 -166 -10 -170 0 -160 C 10 -170 22 -166 22 -156 C 22 -144 9 -136 0 -128 Z" fill="#ff8cc6"/>`;
 
-const ROPA = {
-  mameluco: {
-    torso: `<ellipse cx="0" cy="-112" rx="93" ry="99" fill="${AMARILLO}" stroke="${AMARILLO_BORDE}" stroke-width="4"/>
-      ${PATITO_PECHO}
-      <circle cx="-16" cy="-34" r="4" fill="#fff"/><circle cx="0" cy="-32" r="4" fill="#fff"/><circle cx="16" cy="-34" r="4" fill="#fff"/>`,
-    piernas: ambos(`<ellipse cx="-50" cy="-24" rx="53" ry="34" transform="rotate(-10 -50 -24)" fill="${AMARILLO}" stroke="${AMARILLO_BORDE}" stroke-width="4"/>`),
-    mangas: ambos(`<circle cx="-74" cy="-160" r="27" fill="${AMARILLO}" stroke="${AMARILLO_BORDE}" stroke-width="4"/>`),
-  },
-  babero: {
-    encima: `<path d="M -62 -200 Q 0 -176 62 -200 L 70 -128 Q 0 -86 -70 -128 Z" fill="#ffffff" stroke="#e58fb4" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M -60 -126 Q 0 -94 60 -126" fill="none" stroke="#ff9fc4" stroke-width="4" stroke-dasharray="3 8" stroke-linecap="round"/>
-      <path d="M 0 -128 C -9 -136 -22 -144 -22 -156 C -22 -166 -10 -170 0 -160 C 10 -170 22 -166 22 -156 C 22 -144 9 -136 0 -128 Z" fill="#ff8cc6"/>`,
-  },
-  toalla: {
-    encima: `<path d="M -102 -192 Q -122 -100 -106 -16 L 106 -16 Q 122 -100 102 -192 Q 0 -218 -102 -192 Z" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M -112 -70 Q 0 -54 112 -70 M -116 -110 Q 0 -94 116 -110" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>`,
-    sombrero: `${ambos('<circle cx="-82" cy="-410" r="22" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4"/><circle cx="-82" cy="-410" r="11" fill="#ffc4e1"/>')}
-      <path d="M -126 -296 Q -128 -436 0 -436 Q 128 -436 126 -296 L 106 -296 Q 106 -412 0 -412 Q -106 -412 -106 -296 Z" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4" stroke-linejoin="round"/>`,
-  },
-  cobija: {
-    atras: '<ellipse cx="0" cy="-292" rx="164" ry="74" fill="#ffffff" stroke="#d6c8f0" stroke-width="4"/>',
-    encima: `<path d="M -158 -196 Q 0 -214 158 -196 L 168 -24 Q 0 -6 -168 -24 Z" fill="url(#cobija-estrellas)" stroke="#9b86d6" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M -158 -196 Q 0 -214 158 -196 L 160 -172 Q 0 -190 -160 -172 Z" fill="#ffffff" stroke="#9b86d6" stroke-width="4" stroke-linejoin="round"/>
-      <circle class="piel" cx="-58" cy="-192" r="20"/><circle class="piel" cx="58" cy="-192" r="20"/>`,
-  },
+const TOALLA = {
+  encima: `<path d="M -102 -192 Q -122 -100 -106 -16 L 106 -16 Q 122 -100 102 -192 Q 0 -218 -102 -192 Z" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M -112 -70 Q 0 -54 112 -70 M -116 -110 Q 0 -94 116 -110" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>`,
+  capucha: `${ambos('<circle cx="-82" cy="-410" r="22" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4"/><circle cx="-82" cy="-410" r="11" fill="#ffc4e1"/>')}
+    <path d="M -126 -296 Q -128 -436 0 -436 Q 128 -436 126 -296 L 106 -296 Q 106 -412 0 -412 Q -106 -412 -106 -296 Z" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4" stroke-linejoin="round"/>`,
 };
-ROPA.babero.torso = ROPA.mameluco.torso;
-ROPA.babero.piernas = ROPA.mameluco.piernas;
-ROPA.babero.mangas = ROPA.mameluco.mangas;
+
+const COBIJA = {
+  atras: '<ellipse cx="0" cy="-292" rx="164" ry="74" fill="#ffffff" stroke="#d6c8f0" stroke-width="4"/>',
+  encima: `<path d="M -158 -196 Q 0 -214 158 -196 L 168 -24 Q 0 -6 -168 -24 Z" fill="url(#cobija-estrellas)" stroke="#9b86d6" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M -158 -196 Q 0 -214 158 -196 L 160 -172 Q 0 -190 -160 -172 Z" fill="#ffffff" stroke="#9b86d6" stroke-width="4" stroke-linejoin="round"/>
+    <circle class="piel" cx="-58" cy="-192" r="20"/><circle class="piel" cx="58" cy="-192" r="20"/>`,
+};
 
 const DEFS = `
   <defs>
@@ -134,17 +121,21 @@ const DEFS = `
 
 export function crearBebe(contenedor) {
   contenedor.innerHTML = `${DEFS}
-    <g class="bebe-respirar"><g class="bebe-anim"><g class="bebe" data-pose="sentado" data-ropa="mameluco"
+    <g class="bebe-respirar"><g class="bebe-anim"><g class="bebe" data-pose="sentado"
         data-ojos="abiertos" data-boca="sonrisa">
+      <defs class="b-defs"></defs>
       <g class="b-atras"></g>
       <g class="b-cuerpo">${TORSO}</g>
       <g class="b-ropa-torso"></g>
       <g class="b-piernas">${PIERNAS}</g>
+      <g class="b-panal"></g>
       <g class="b-ropa-piernas"></g>
+      <g class="b-pies"></g>
       <g class="b-brazos">${BRAZOS}</g>
       <g class="b-ropa-mangas"></g>
       <g class="b-encima"></g>
       <g class="b-cabeza">${CABEZA_SVG}</g>
+      <g class="b-capucha"></g>
       <g class="b-sombrero"></g>
       <g class="b-manchas"></g>
       <g class="b-espuma"></g>
@@ -154,6 +145,32 @@ export function crearBebe(contenedor) {
   const anim = contenedor.querySelector('.bebe-anim');
   const parte = (nombre) => contenedor.querySelector(`.b-${nombre}`);
   const espuma = parte('espuma');
+
+  let puesto = {};
+  let modo = 'puesta';
+  let conBabero = false;
+
+  function dibujarRopa() {
+    const desnudo = modo === 'nada' || modo === 'toalla';
+    const dibujo = (lugar) => {
+      const p = !desnudo && prendaPorId(puesto[lugar]);
+      return p ? p.dibujo() : {};
+    };
+    const ropa = dibujo('ropa');
+    const cabeza = dibujo('cabeza');
+    const pies = dibujo('pies');
+    parte('defs').innerHTML = (ropa.defs || '') + (cabeza.defs || '') + (pies.defs || '');
+    parte('ropa-torso').innerHTML = ropa.torso || '';
+    parte('ropa-piernas').innerHTML = ropa.piernas || '';
+    parte('ropa-mangas').innerHTML = ropa.mangas || '';
+    parte('panal').innerHTML = modo !== 'nada' && !ropa.torso ? PANAL : '';
+    parte('pies').innerHTML = pies.pies || '';
+    // Si trae algo en la cabeza, se quita la capucha del disfraz.
+    parte('capucha').innerHTML = modo === 'toalla' ? TOALLA.capucha : (!cabeza.sombrero && ropa.capucha) || '';
+    parte('sombrero').innerHTML = cabeza.sombrero || '';
+    parte('encima').innerHTML = { toalla: TOALLA.encima, cobija: COBIJA.encima }[modo] || (conBabero ? BABERO : '');
+    parte('atras').innerHTML = modo === 'cobija' ? COBIJA.atras : '';
+  }
 
   let base = { ojos: 'abiertos', boca: 'sonrisa' };
   let finExpresion = 0;
@@ -169,15 +186,21 @@ export function crearBebe(contenedor) {
 
     pose(p) { bebe.dataset.pose = p; },
 
-    ropa(r) {
-      bebe.dataset.ropa = r;
-      const ropa = ROPA[r] || {};
-      parte('atras').innerHTML = ropa.atras || '';
-      parte('ropa-torso').innerHTML = ropa.torso || '';
-      parte('ropa-piernas').innerHTML = ropa.piernas || '';
-      parte('ropa-mangas').innerHTML = ropa.mangas || '';
-      parte('encima').innerHTML = ropa.encima || '';
-      parte('sombrero').innerHTML = ropa.sombrero || '';
+    /** Ropa del ropero: { ropa, cabeza, pies } con el id de cada prenda (o null). */
+    vestir(nuevo) {
+      puesto = { ...nuevo };
+      dibujarRopa();
+    },
+
+    /** 'puesta' (su ropa), 'nada' (en la tina), 'toalla' o 'cobija' (acostado en la cuna). */
+    modo(m) {
+      modo = m;
+      dibujarRopa();
+    },
+
+    babero(si) {
+      conBabero = si;
+      dibujarRopa();
     },
 
     /** Cara de siempre (a la que regresa después de reírse, comer, etc.). */
@@ -264,6 +287,5 @@ export function crearBebe(contenedor) {
     },
   };
 
-  api.ropa('mameluco');
   return api;
 }
