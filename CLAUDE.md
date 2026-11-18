@@ -2,7 +2,9 @@
 
 Juego de vestir muñecas, en caricatura, para niñas de **4 a 6 años**.
 Se juega en los mismos iPads que `juego-manejo`: se abre en Safari y se agrega a la
-pantalla de inicio, sin pasar por el App Store. Se publica con GitHub Pages.
+pantalla de inicio, sin pasar por el App Store. Se publica con GitHub Pages:
+https://vdelrazo.github.io/casa-de-sarah/ (repo `vdelrazo/casa-de-sarah`; la carpeta local
+se sigue llamando `juego-barbies`).
 
 Este archivo es la fuente de verdad del diseño. Si una decisión cambia,
 actualízala aquí.
@@ -67,4 +69,13 @@ actualízala aquí.
 
 ## Preguntas abiertas
 
-- ¿Dónde se publica? Propuesta: repo nuevo `casa-de-sarah` en GitHub Pages.
+### Pendiente de probar en el iPad (fase 1)
+
+Abrir https://vdelrazo.github.io/casa-de-sarah/ y revisar:
+
+1. ¿Se oyen los sonidos y la voz? ¿La voz suena con acento mexicano?
+2. ¿Tocar una prenda se la pone y tocarla otra vez se la quita?
+3. ¿Arrastrar una prenda hasta la muñeca funciona con el dedo?
+4. ¿Se ve bien el iPad acostado y parado?
+5. ¿Al cerrar y volver a abrir, la muñeca sigue con la misma ropa?
+6. ¿Las niñas entienden solas los íconos de los cajones, el dado y el gancho?
