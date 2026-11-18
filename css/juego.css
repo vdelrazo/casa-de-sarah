@@ -1,20 +1,12 @@
 /* Todo pensado para dedos chicos: botones de 80 px o más y bien separados. */
 
 :root {
-  --piel: #f9d0b0;
-  --piel-borde: #d6977a;
-  --pelo: #6e3f2b;
-  --pelo-borde: #452518;
-  --base: #efe2ff;
-  --base-borde: #b49cd9;
-
+  --piel: #f9d3b4;
+  --piel-borde: #d8987a;
+  --pelo: #7a4a2e;
   --tinta: #6b2d5c;
-  --sombra: 0 6px 0 rgba(107, 45, 92, 0.2);
+  --sombra: 0 6px 0 rgba(107, 45, 92, 0.18);
   --orilla: 16px;
-  --hueco: 12px;
-  --pestana: 84px;
-  /* Horizontal: 3 columnas × 3 filas de prendas. */
-  --celda: min(130px, calc((100dvh - 2 * var(--orilla) - 2 * var(--hueco)) / 3));
 }
 
 * {
@@ -28,7 +20,7 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #ffe6f1;
+  background: #def5ec;
   font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
   /* Sin zoom, sin seleccionar texto y sin el menú de "mantener presionado" de iOS. */
   touch-action: none;
@@ -38,76 +30,77 @@ html, body {
   overscroll-behavior: none;
 }
 
-button { font: inherit; color: inherit; cursor: pointer; }
+button { font: inherit; color: inherit; cursor: pointer; padding: 0; touch-action: none; }
 
-/* ---------- Acomodo: cuarto a la izquierda, ropero a la derecha ---------- */
+/* ---------- Acomodo: escena con herramientas a la derecha y barra abajo ---------- */
 
 #juego {
   position: fixed;
   inset: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
 }
 
 #escenario {
   position: relative;
   overflow: hidden;
-  min-width: 0;
   min-height: 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
-#cuarto {
+#fondo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-#ropero {
-  display: flex;
-  gap: var(--hueco);
-  padding: calc(env(safe-area-inset-top) + var(--orilla)) calc(env(safe-area-inset-right) + var(--orilla))
-    calc(env(safe-area-inset-bottom) + var(--orilla)) var(--orilla);
-  background: var(--fondo-cajon, #fff4fa);
-  border-left: 8px solid var(--color-cajon, #ffc4e1);
-  transition: background 0.2s, border-color 0.2s;
+#escena {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: block;
+  padding-top: calc(env(safe-area-inset-top) + 8px);
 }
 
-#pestanas {
+#herramientas {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--hueco);
+  gap: 20px;
+  padding: var(--orilla) calc(env(safe-area-inset-right) + var(--orilla)) var(--orilla) 4px;
 }
 
-#prendas {
-  display: grid;
-  grid-template-columns: repeat(3, var(--celda));
-  grid-auto-rows: var(--celda);
-  gap: var(--hueco);
-  align-content: center;
-}
+#herramientas:empty { display: none; }
 
-/* Vertical: cuarto arriba, ropero abajo con 5 columnas × 2 filas. */
+/* iPad parado: las herramientas van en fila, abajo de la escena y cerca de las manos. */
 @media (orientation: portrait) {
-  :root { --celda: min(140px, calc((100vw - 2 * var(--orilla) - 4 * var(--hueco)) / 5)); }
-  #juego {
+  #escenario {
     grid-template-columns: 1fr;
     grid-template-rows: minmax(0, 1fr) auto;
   }
-  #ropero {
-    flex-direction: column;
-    align-items: center;
-    padding: var(--orilla) calc(env(safe-area-inset-right) + var(--orilla))
-      calc(env(safe-area-inset-bottom) + var(--orilla)) calc(env(safe-area-inset-left) + var(--orilla));
-    border-left: none;
-    border-top: 8px solid var(--color-cajon, #ffc4e1);
+  #escena { grid-row: 1; }
+  #herramientas {
+    grid-row: 2;
+    flex-direction: row;
+    padding: 4px var(--orilla) 14px;
   }
-  #pestanas { flex-direction: row; }
-  #prendas { grid-template-columns: repeat(5, var(--celda)); }
+}
+
+#barra {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 4vw, 36px);
+  padding: 10px var(--orilla) calc(env(safe-area-inset-bottom) + 10px);
+  background: #fff7fb;
+  border-top: 6px solid #ffd0e3;
 }
 
 /* ---------- Botones ---------- */
@@ -115,236 +108,180 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .boton {
   display: grid;
   place-items: center;
-  padding: 0;
   border: none;
   border-radius: 50%;
   box-shadow: var(--sombra);
-  touch-action: none;
   transition: transform 0.08s, box-shadow 0.08s;
 }
 
-.boton svg {
-  width: 62%;
-  height: 62%;
-  pointer-events: none;
-}
+.boton svg { width: 62%; height: 62%; pointer-events: none; }
 
 .boton:active {
   transform: translateY(4px) scale(0.95);
-  box-shadow: 0 2px 0 rgba(107, 45, 92, 0.2);
+  box-shadow: 0 2px 0 rgba(107, 45, 92, 0.18);
 }
 
-#btn-dado,
-#btn-quitar {
-  position: absolute;
-  z-index: 2;
-  bottom: calc(env(safe-area-inset-bottom) + var(--orilla));
+.actividad {
   width: 96px;
   height: 96px;
-}
-
-#btn-dado {
-  left: calc(env(safe-area-inset-left) + var(--orilla));
-  background: #a77bff;
-}
-
-#btn-quitar {
-  right: var(--orilla);
-  background: #4fb8f5;
-}
-
-@media (orientation: portrait) {
-  #btn-dado, #btn-quitar { bottom: var(--orilla); }
-  #btn-quitar { right: calc(env(safe-area-inset-right) + var(--orilla)); }
-}
-
-/* Cajones del ropero */
-.pestana {
-  width: var(--pestana);
-  height: var(--pestana);
-  padding: 0;
   display: grid;
   place-items: center;
-  border: 5px solid #fff;
+  border: 6px solid #ffd0e3;
   border-radius: 50%;
-  background: var(--color);
-  box-shadow: var(--sombra);
-  opacity: 0.6;
-  transform: scale(0.88);
-  transition: transform 0.12s, opacity 0.12s;
-  touch-action: none;
-}
-
-.pestana svg { width: 66%; height: 66%; pointer-events: none; }
-
-.pestana.activa {
-  opacity: 1;
-  transform: scale(1.06);
-  border-color: var(--tinta);
-}
-
-/* Prendas del ropero */
-.prenda {
-  width: var(--celda);
-  height: var(--celda);
-  padding: 8px;
-  position: relative;
-  border: 5px solid #fff;
-  border-radius: 28px;
   background: #fff;
   box-shadow: var(--sombra);
-  touch-action: none;
-  transition: transform 0.08s;
+  transition: transform 0.12s, border-color 0.12s;
 }
 
-.prenda svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
+.actividad svg { width: 66%; height: 66%; pointer-events: none; }
+
+.actividad.activa {
+  border-color: #ff6fb3;
+  background: #ffe6f1;
+  transform: scale(1.08);
 }
 
-.prenda.apretada { transform: scale(0.94); }
-
-/* En el ropero no se dibuja la mano que sostiene la bolsa, la varita, etc. */
-.prenda .piel,
-.fantasma .piel { display: none; }
-
-/* La que ya trae puesta: orilla dorada y palomita. */
-.prenda.puesta {
-  border-color: #ffb703;
-  background: #fff7dc;
+/* Lo que pide el bebé: el botón late. */
+.actividad.late {
+  border-color: #ffc800;
+  animation: latir 1s ease-in-out infinite;
 }
 
-.prenda.puesta::after {
-  content: "";
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #ffb703 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 72% no-repeat;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+@keyframes latir {
+  50% { transform: scale(1.14); }
 }
 
-/* La prenda que se arrastra con el dedo */
+.herramienta {
+  width: 112px;
+  height: 112px;
+  padding: 10px;
+  border: 5px solid #fff;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--sombra);
+}
+
+.herramienta svg { width: 100%; height: 100%; pointer-events: none; }
+.herramienta.en-uso svg { opacity: 0.25; }
+
+/* La que toca usar brilla. */
+.herramienta.brilla {
+  border-color: #ffc800;
+  animation: brillar 1.3s ease-in-out infinite;
+}
+
+@keyframes brillar {
+  50% { box-shadow: 0 0 0 10px rgba(255, 200, 0, 0.35), var(--sombra); transform: scale(1.06); }
+}
+
+/* La herramienta que va en el dedo */
 .fantasma {
   position: fixed;
+  left: 0;
+  top: 0;
   z-index: 50;
   width: 150px;
   height: 150px;
-  margin: -75px 0 0 -75px;
   pointer-events: none;
   filter: drop-shadow(0 10px 8px rgba(107, 45, 92, 0.3));
 }
 
 .fantasma svg { width: 100%; height: 100%; overflow: visible; }
 
-#escenario.recibir #muneca { filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 8px #ffd84d); }
+/* ---------- Estrellas, sol, noche ---------- */
 
-/* ---------- La muñeca ---------- */
-
-#muneca {
-  position: relative;
-  height: 94%;
-  width: auto;
-  max-width: 100%;
-  aspect-ratio: 1 / 2;
-  margin-bottom: 1%;
-  overflow: visible;
+#contador {
+  position: absolute;
+  z-index: 3;
+  top: calc(env(safe-area-inset-top) + var(--orilla));
+  left: calc(env(safe-area-inset-left) + var(--orilla));
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px 6px 8px;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--sombra);
+  font-size: 34px;
+  font-weight: 900;
+  color: #e0a800;
+  pointer-events: none;
 }
 
-.piel {
-  fill: var(--piel);
-  stroke: var(--piel-borde);
-  stroke-width: 3;
-  stroke-linejoin: round;
+#contador svg { width: 48px; height: 48px; }
+#contador.salta { animation: salta-contador 0.5s ease-out; }
+
+@keyframes salta-contador {
+  40% { transform: scale(1.3); }
 }
 
-.extremidad { fill: none; stroke: var(--piel); stroke-linecap: round; }
-.extremidad-borde { fill: none; stroke: var(--piel-borde); stroke-linecap: round; }
-
-.pelo {
-  fill: var(--pelo);
-  stroke: var(--pelo-borde);
-  stroke-width: 3;
-  stroke-linejoin: round;
+.estrella-vuela {
+  position: fixed;
+  z-index: 55;
+  width: 64px;
+  height: 64px;
+  pointer-events: none;
 }
 
-.ceja { fill: none; stroke: var(--pelo-borde); stroke-width: 4; stroke-linecap: round; }
-.nariz { fill: none; stroke: var(--piel-borde); stroke-width: 3; stroke-linecap: round; }
+.estrella-vuela svg { width: 100%; height: 100%; }
 
-.base {
-  fill: var(--base);
-  stroke: var(--base-borde);
-  stroke-width: 3;
-  stroke-linejoin: round;
+#btn-sol {
+  position: absolute;
+  z-index: 3;
+  top: calc(env(safe-area-inset-top) + var(--orilla));
+  left: 50%;
+  width: 130px;
+  height: 130px;
+  margin-left: -65px;
+  background: #fff3b0;
+  animation: latir 1.4s ease-in-out infinite;
 }
 
-/* Parpadeo */
-#muneca .ojos {
-  transform-box: view-box;
-  transform-origin: 150px 138px;
-  animation: parpadear 4.5s infinite;
+#btn-sol svg { width: 88%; height: 88%; }
+
+#oscuridad {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(26, 22, 80, 0.62);
+  opacity: 0;
+  transition: opacity 0.6s;
 }
 
-@keyframes parpadear {
-  0%, 93%, 100% { transform: scaleY(1); }
-  96.5% { transform: scaleY(0.1); }
+.noche #oscuridad { opacity: 1; }
+
+#oscuridad .luna {
+  position: absolute;
+  top: 6%;
+  right: 22%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  box-shadow: -18px 10px 0 0 #fff3b0;
 }
 
-.ojos-felices, .boca-risa { display: none; }
-#muneca.riendo .ojos, #muneca.riendo .boca { display: none; }
-#muneca.riendo .ojos-felices, #muneca.riendo .boca-risa { display: inline; }
-
-/* Movimientos */
-#muneca .respirar,
-#muneca .animado {
-  transform-box: view-box;
-  transform-origin: 150px 570px;
+#oscuridad .astro {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #fff3b0;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: titilar 1.8s ease-in-out infinite;
 }
 
-#muneca .respirar { animation: respirar 3.2s ease-in-out infinite; }
-
-@keyframes respirar {
-  50% { transform: translateY(-3px) scaleY(1.008); }
+@keyframes titilar {
+  50% { transform: scale(0.5); opacity: 0.5; }
 }
 
-#muneca .animado.saltar { animation: saltar 0.45s ease-out; }
+.noche #lampara .foco { opacity: 0; }
+#lampara .foco { opacity: 0.55; transition: opacity 0.4s; }
 
-@keyframes saltar {
-  0% { transform: none; }
-  35% { transform: translateY(-24px); }
-  65% { transform: translateY(0) scale(1.03, 0.97); }
-  100% { transform: none; }
-}
-
-#muneca .animado.girar { animation: girar 0.6s ease-in-out; }
-
-@keyframes girar {
-  0% { transform: scaleX(1); }
-  35% { transform: scaleX(0) translateY(-16px); }
-  70% { transform: scaleX(-1) translateY(-8px); }
-  100% { transform: scaleX(1); }
-}
-
-#muneca .animado.cosquillas { animation: cosquillas 0.9s ease-in-out; }
-
-@keyframes cosquillas {
-  0%, 100% { transform: rotate(0deg); }
-  15% { transform: rotate(-5deg); }
-  30% { transform: rotate(5deg); }
-  45% { transform: rotate(-4deg); }
-  60% { transform: rotate(4deg); }
-  75% { transform: rotate(-2deg); }
-}
-
-/* Brillitos */
+/* Brillitos y corazones */
 #chispas {
   position: absolute;
   inset: 0;
-  z-index: 3;
+  z-index: 4;
   overflow: hidden;
   pointer-events: none;
 }
@@ -355,6 +292,212 @@ button { font: inherit; color: inherit; cursor: pointer; }
   height: 38px;
   margin: -19px 0 0 -19px;
   overflow: visible;
+}
+
+#manita {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  width: 90px;
+  height: 90px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.25));
+}
+
+#manita svg { width: 100%; height: 100%; }
+
+/* ---------- El bebé ---------- */
+
+.piel { fill: var(--piel); stroke: var(--piel-borde); stroke-width: 3; stroke-linejoin: round; }
+.extremidad { fill: none; stroke: var(--piel); stroke-linecap: round; }
+.extremidad-borde { fill: none; stroke: var(--piel-borde); stroke-linecap: round; }
+.trazo-piel { fill: none; stroke: var(--piel-borde); stroke-width: 3; stroke-linecap: round; }
+.pelo-trazo { fill: none; stroke: var(--pelo); stroke-width: 7; stroke-linecap: round; }
+.ceja { fill: none; stroke: var(--piel-borde); stroke-width: 4; stroke-linecap: round; }
+.cachete { fill: #ff8fab; opacity: 0.5; }
+.nariz { fill: var(--piel-borde); opacity: 0.5; }
+.parpado { fill: var(--piel); }
+
+/* Caras: se ve solo la que dicen data-ojos y data-boca. */
+.bebe .ojos-felices,
+.bebe .ojos-dormidos,
+.bebe .tristeza,
+.bebe .boca { display: none; }
+
+.bebe[data-ojos="felices"] .ojos-abiertos,
+.bebe[data-ojos="dormidos"] .ojos-abiertos,
+.bebe[data-ojos="felices"] .parpados,
+.bebe[data-ojos="dormidos"] .parpados { display: none; }
+
+.bebe[data-ojos="felices"] .ojos-felices,
+.bebe[data-ojos="dormidos"] .ojos-dormidos,
+.bebe[data-ojos="tristes"] .tristeza { display: inline; }
+
+.bebe[data-boca="sonrisa"] .boca-sonrisa,
+.bebe[data-boca="abierta"] .boca-abierta,
+.bebe[data-boca="mastica"] .boca-mastica,
+.bebe[data-boca="risa"] .boca-risa,
+.bebe[data-boca="puchero"] .boca-puchero,
+.bebe[data-boca="bostezo"] .boca-bostezo,
+.bebe[data-boca="chupa"] .boca-chupa,
+.bebe[data-boca="chupon"] .boca-chupon { display: inline; }
+
+/* Acostado en la cuna: solo se ve la cabeza, la cobija y las manitas. */
+.bebe[data-pose="acostado"] :is(.b-cuerpo, .b-ropa-torso, .b-piernas, .b-ropa-piernas, .b-brazos, .b-ropa-mangas) {
+  display: none;
+}
+
+/* Parpadeo */
+.bebe .ojos-abiertos {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: parpadear 5s infinite;
+}
+
+@keyframes parpadear {
+  0%, 94%, 100% { transform: scaleY(1); }
+  97% { transform: scaleY(0.1); }
+}
+
+.boca-mastica {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: masticar 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes masticar {
+  to { transform: scale(1.3, 0.6); }
+}
+
+/* Quiere eructar: cachetes inflados e hipo. */
+.bebe[data-hipo] .cachete {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  transform: scale(1.4);
+  opacity: 0.8;
+}
+
+.bebe[data-hipo] {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: hipo 1.4s ease-in-out infinite;
+}
+
+@keyframes hipo {
+  0%, 70%, 100% { transform: none; }
+  78% { transform: translateY(-10px); }
+  86% { transform: none; }
+}
+
+/* Movimientos */
+.bebe-respirar,
+.bebe-anim {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.bebe-respirar { animation: respirar 3.2s ease-in-out infinite; }
+
+@keyframes respirar {
+  50% { transform: scale(1.012, 0.99); }
+}
+
+.bebe-anim.salto { animation: salto 0.5s ease-out; }
+@keyframes salto {
+  35% { transform: translateY(-30px); }
+  65% { transform: translateY(0) scale(1.04, 0.96); }
+}
+
+.bebe-anim.cosquillas { animation: cosquillas 0.9s ease-in-out; }
+@keyframes cosquillas {
+  15% { transform: rotate(-5deg); }
+  30% { transform: rotate(5deg); }
+  45% { transform: rotate(-4deg); }
+  60% { transform: rotate(4deg); }
+  75% { transform: rotate(-2deg); }
+}
+
+.bebe-anim.palmada { animation: palmada 0.3s ease-out; }
+@keyframes palmada {
+  40% { transform: translateY(8px) scale(1.03, 0.95); }
+}
+
+.bebe-anim.estirarse { animation: estirarse 1s ease-in-out; }
+@keyframes estirarse {
+  40% { transform: scale(1.06, 1.1); }
+}
+
+/* ---------- Cosas de los lugares ---------- */
+
+#mecedora {
+  transform-box: view-box;
+  transform-origin: 300px 640px;
+}
+
+#patito .flotar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: flotar 2.4s ease-in-out infinite;
+}
+
+@keyframes flotar {
+  50% { transform: translateY(-6px) rotate(-4deg); }
+}
+
+#patito.cuac {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: cuac 0.4s ease-out;
+}
+
+@keyframes cuac {
+  40% { transform: scale(1.15, 0.85); }
+}
+
+.gota {
+  fill: none;
+  stroke: #6fc0f5;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-dasharray: 12 16;
+  animation: llover 0.3s linear infinite;
+}
+
+@keyframes llover {
+  to { stroke-dashoffset: -28; }
+}
+
+.pompa {
+  fill: rgba(255, 255, 255, 0.45);
+  stroke: #9ad8ff;
+  stroke-width: 3;
+}
+
+.zeta {
+  font: 900 40px ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+  fill: #b49cff;
+  stroke: #ffffff;
+  stroke-width: 3;
+  paint-order: stroke;
+  opacity: 0;
+  animation: zeta 2.4s ease-out infinite;
+}
+
+@keyframes zeta {
+  0% { opacity: 0; transform: translate(0, 0); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(26px, -70px); }
+}
+
+.globo-in.brinca {
+  transform-box: fill-box;
+  transform-origin: 30% 100%;
+  animation: brinca 0.6s ease-out;
+}
+
+@keyframes brinca {
+  40% { transform: scale(1.15) translateY(-8px); }
 }
 
 /* ---------- Pantalla de inicio ---------- */
@@ -368,7 +511,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   align-items: center;
   justify-content: center;
   gap: 5vh;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 214, 234, 0.94) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(222, 245, 236, 0.94) 70%);
 }
 
 #titulo {
@@ -390,7 +533,3 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 
 #btn-jugar:active { animation: none; box-shadow: 0 3px 0 #c23c80; }
-
-@keyframes latir {
-  50% { transform: scale(1.08); }
-}
