@@ -112,8 +112,35 @@ const PATITO_TINA = `
     <circle cx="35" cy="32" r="3.5" fill="#3d2b4f"/>
   </g></g>`;
 
+// Móvil de juguete colgado sobre el cambiador.
+const MOVIL = `
+  <path d="M 130 120 Q 300 150 470 120" fill="none" stroke="#d6a3c1" stroke-width="4"/>
+  <path d="M 170 128 L 170 160 M 300 140 L 300 172 M 430 128 L 430 160" stroke="#d6a3c1" stroke-width="3"/>
+  <circle cx="170" cy="170" r="12" fill="#ffd84d"/><circle cx="300" cy="182" r="12" fill="#ff8cc6"/><circle cx="430" cy="170" r="12" fill="#9ad8ff"/>`;
+
+// Cómoda con colchoncito: ahí se viste al bebé y se le cambia el pañal.
+const CAMBIADOR = `
+  <rect x="92" y="574" width="416" height="100" rx="14" fill="#ffffff" stroke="#e6a8c8" stroke-width="6"/>
+  <path d="M 92 612 L 508 612 M 300 574 L 300 674" stroke="#e6a8c8" stroke-width="5"/>
+  <circle cx="196" cy="593" r="8" fill="#ff8cc6"/><circle cx="404" cy="593" r="8" fill="#ff8cc6"/>
+  <circle cx="196" cy="632" r="8" fill="#ff8cc6"/><circle cx="404" cy="632" r="8" fill="#ff8cc6"/>
+  <rect x="104" y="550" width="392" height="32" rx="16" fill="#ffd0e3" stroke="#e6a8c8" stroke-width="5"/>
+  <g fill="#ffffff" opacity="0.8"><circle cx="140" cy="566" r="4"/><circle cx="190" cy="566" r="4"/><circle cx="410" cy="566" r="4"/><circle cx="460" cy="566" r="4"/></g>`;
+
+// Bote de pañales, a la derecha del cambiador. Su tapa se abre al tirar el pañal.
+export const BOTE_CENTRO = [552, 520];
+const BOTE = `
+  <g id="bote">
+    <path d="M 514 528 L 590 528 L 582 636 Q 552 644 522 636 Z" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M 532 548 L 534 620 M 552 548 L 552 622 M 572 548 L 570 620" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+    <g class="tapa">
+      <rect x="506" y="512" width="92" height="18" rx="8" fill="#7cc7ff" stroke="#5aa9d6" stroke-width="5"/>
+      <rect x="538" y="502" width="28" height="12" rx="5" fill="#5aa9d6"/>
+    </g>
+  </g>`;
+
 export const LUGARES = {
-  casa: {
+  jugar: {
     fondo: 'cuarto',
     bebe: { x: 300, y: 588, pose: 'sentado', modo: 'puesta' },
     atras: `
@@ -123,8 +150,10 @@ export const LUGARES = {
       <rect x="62" y="486" width="54" height="54" rx="10" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="5"/>
       <path d="M 70 570 L 76 556 L 82 570 M 72 566 L 80 566" stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none"/>
       <path d="M 89 498 L 92 508 L 102 509 L 94 515 L 97 525 L 89 519 L 81 525 L 84 515 L 76 509 L 86 508 Z" fill="#ffffff"/>
-      <circle cx="532" cy="566" r="34" fill="#ffd84d" stroke="#d9a81c" stroke-width="5"/>
-      <path d="M 500 556 Q 532 572 564 556 M 504 584 Q 532 566 560 584" fill="none" stroke="#ff6fb3" stroke-width="6"/>`,
+      <g id="pelota"><g class="rebota">
+        <circle cx="532" cy="566" r="34" fill="#ffd84d" stroke="#d9a81c" stroke-width="5"/>
+        <path d="M 500 556 Q 532 572 564 556 M 504 584 Q 532 566 560 584" fill="none" stroke="#ff6fb3" stroke-width="6"/>
+      </g></g>`,
     frente: '',
   },
 
@@ -162,17 +191,16 @@ export const LUGARES = {
   vestir: {
     fondo: 'cuarto',
     bebe: { x: 300, y: 540, pose: 'sentado', modo: 'puesta' },
-    atras: `
-      <path d="M 130 120 Q 300 150 470 120" fill="none" stroke="#d6a3c1" stroke-width="4"/>
-      <path d="M 170 128 L 170 160 M 300 140 L 300 172 M 430 128 L 430 160" stroke="#d6a3c1" stroke-width="3"/>
-      <circle cx="170" cy="170" r="12" fill="#ffd84d"/><circle cx="300" cy="182" r="12" fill="#ff8cc6"/><circle cx="430" cy="170" r="12" fill="#9ad8ff"/>`,
-    frente: `
-      <rect x="92" y="574" width="416" height="100" rx="14" fill="#ffffff" stroke="#e6a8c8" stroke-width="6"/>
-      <path d="M 92 612 L 508 612 M 300 574 L 300 674" stroke="#e6a8c8" stroke-width="5"/>
-      <circle cx="196" cy="593" r="8" fill="#ff8cc6"/><circle cx="404" cy="593" r="8" fill="#ff8cc6"/>
-      <circle cx="196" cy="632" r="8" fill="#ff8cc6"/><circle cx="404" cy="632" r="8" fill="#ff8cc6"/>
-      <rect x="104" y="550" width="392" height="32" rx="16" fill="#ffd0e3" stroke="#e6a8c8" stroke-width="5"/>
-      <g fill="#ffffff" opacity="0.8"><circle cx="140" cy="566" r="4"/><circle cx="190" cy="566" r="4"/><circle cx="410" cy="566" r="4"/><circle cx="460" cy="566" r="4"/></g>`,
+    atras: MOVIL,
+    frente: CAMBIADOR,
+  },
+
+  panal: {
+    fondo: 'cuarto',
+    bebe: { x: 300, y: 540, pose: 'sentado', modo: 'panal' },
+    atras: MOVIL,
+    frente: CAMBIADOR,
+    fijos: BOTE,
   },
 
   dormir: {

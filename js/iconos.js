@@ -25,11 +25,21 @@ const PATITO = `
   <circle cx="35" cy="32" r="3.5" fill="#3d2b4f"/>
   <path d="M 42 64 Q 56 76 70 62" fill="none" stroke="#d9a81c" stroke-width="4" stroke-linecap="round"/>`;
 
+const PANAL_LIMPIO = `
+  <path d="M 10 30 Q 50 42 90 30 L 84 58 Q 74 86 50 88 Q 26 86 16 58 Z" fill="#ffffff" stroke="#8fc3e8" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="6" y="24" width="20" height="14" rx="5" fill="#9ad8ff"/><rect x="74" y="24" width="20" height="14" rx="5" fill="#9ad8ff"/>
+  <path d="M 50 70 C 44 65 38 61 38 55 C 38 50 45 48 50 54 C 55 48 62 50 62 55 C 62 61 56 65 50 70 Z" fill="#ff9fc4"/>`;
+
+const SONAJA = `
+  <path d="M 62 62 L 88 88" stroke="#ff8cc6" stroke-width="11" stroke-linecap="round"/>
+  <circle cx="90" cy="90" r="7" fill="#ff8cc6"/>
+  <circle cx="40" cy="40" r="28" fill="#ffd84d" stroke="#d9a81c" stroke-width="4"/>
+  <path d="M 16 32 Q 40 44 64 32 M 14 48 Q 40 60 66 48" fill="none" stroke="#ff8cc6" stroke-width="6"/>
+  <circle cx="30" cy="28" r="5" fill="#ffffff" opacity="0.7"/>`;
+
 export const ICONO_ACTIVIDAD = {
-  casa: svg(`
-    <path d="M 12 50 L 50 16 L 88 50 Z" fill="#ff7eb9" stroke="#d94f93" stroke-width="5" stroke-linejoin="round"/>
-    <rect x="23" y="47" width="54" height="40" rx="6" fill="#ffe08a" stroke="#d9b24a" stroke-width="5"/>
-    <rect x="42" y="62" width="16" height="25" rx="5" fill="#ff7eb9"/>`),
+  jugar: svg(SONAJA),
+  panal: svg(PANAL_LIMPIO),
   comer: svg(biberon(1)),
   banar: svg(PATITO),
   vestir: ICONO_MAMELUCO,
@@ -86,6 +96,45 @@ export const HERRAMIENTAS = {
       <path d="M 12 46 L 88 46 M 12 62 L 88 62" stroke="#ffffff" stroke-width="6"/>
       <path d="M 12 36 Q 50 48 88 36" fill="none" stroke="#5aa9d6" stroke-width="3"/>`),
   },
+  toallitas: {
+    punta: [50, 46],
+    icono: () => svg(`
+      <rect x="12" y="34" width="76" height="50" rx="14" fill="#9ad8ff" stroke="#5aa9d6" stroke-width="4"/>
+      <ellipse cx="50" cy="44" rx="20" ry="6" fill="#5aa9d6"/>
+      <path d="M 36 44 Q 34 22 46 14 Q 52 24 58 12 Q 68 24 64 44 Z" fill="#ffffff" stroke="#9ab8cc" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 50 74 C 45 70 40 67 40 62 C 40 58 46 56 50 61 C 54 56 60 58 60 62 C 60 67 55 70 50 74 Z" fill="#ffffff"/>`),
+  },
+  talco: {
+    punta: [40, 14],
+    icono: () => svg(`
+      <rect x="26" y="26" width="40" height="64" rx="14" fill="#ffffff" stroke="#c9c9d6" stroke-width="4"/>
+      <path d="M 30 26 Q 30 10 46 10 Q 62 10 62 26 Z" fill="#ff9fc4" stroke="#e07aa5" stroke-width="4"/>
+      <circle cx="40" cy="17" r="2.5" fill="#e07aa5"/><circle cx="48" cy="15" r="2.5" fill="#e07aa5"/><circle cx="54" cy="19" r="2.5" fill="#e07aa5"/>
+      <path d="M 46 60 C 41 56 36 53 36 48 C 36 44 42 42 46 47 C 50 42 56 44 56 48 C 56 53 51 56 46 60 Z" fill="#ffc4dc"/>
+      <g fill="#ffffff" stroke="#e3e3ee" stroke-width="2"><circle cx="76" cy="20" r="9"/><circle cx="86" cy="32" r="6"/><circle cx="70" cy="8" r="5"/></g>`),
+  },
+  panal: {
+    punta: [50, 56],
+    icono: () => svg(PANAL_LIMPIO),
+  },
+  mantita: {
+    punta: [50, 50],
+    icono: () => svg(`
+      <path d="M 12 22 Q 50 10 88 22 L 84 80 Q 50 92 16 80 Z" fill="#cdbbff" stroke="#9b86d6" stroke-width="4" stroke-linejoin="round"/>
+      <g fill="#fff6c2"><circle cx="34" cy="38" r="5"/><circle cx="62" cy="34" r="5"/><circle cx="48" cy="58" r="5"/><circle cx="72" cy="64" r="5"/><circle cx="28" cy="68" r="5"/></g>
+      <path d="M 16 80 Q 50 92 84 80" fill="none" stroke="#ffffff" stroke-width="5" stroke-dasharray="2 8" stroke-linecap="round"/>`),
+  },
+  burbujero: {
+    punta: [30, 30],
+    icono: () => svg(`
+      <path d="M 44 44 L 88 88" stroke="#7cc7ff" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="30" cy="30" r="18" fill="rgba(255,255,255,0.5)" stroke="#ff8cc6" stroke-width="7"/>
+      <g fill="rgba(255,255,255,0.6)" stroke="#9ad8ff" stroke-width="3"><circle cx="66" cy="20" r="10"/><circle cx="84" cy="44" r="7"/><circle cx="14" cy="66" r="6"/></g>`),
+  },
+  sonaja: {
+    punta: [40, 40],
+    icono: () => svg(SONAJA),
+  },
   chupon: {
     punta: [50, 46],
     icono: () => svg(`
@@ -96,6 +145,41 @@ export const HERRAMIENTAS = {
 };
 
 // ---------- Otros ----------
+
+/** El pañal sucio abierto, con su popó de caricatura (va en el dedo rumbo al bote). */
+export const PANAL_SUCIO_ABIERTO = svg(`
+  <path d="M 12 24 Q 50 36 88 24 L 80 50 Q 66 60 66 74 L 70 92 Q 50 98 30 92 L 34 74 Q 34 60 20 50 Z"
+    fill="#f6e9c4" stroke="#cdb57a" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="6" y="18" width="18" height="13" rx="4" fill="#9ad8ff"/><rect x="76" y="18" width="18" height="13" rx="4" fill="#9ad8ff"/>
+  <g stroke="#5e3a17" stroke-width="3">
+    <ellipse cx="50" cy="70" rx="19" ry="9" fill="#8b5a2b"/>
+    <ellipse cx="50" cy="60" rx="14" ry="8" fill="#9a6532"/>
+    <ellipse cx="50" cy="51" rx="9" ry="6" fill="#a8703a"/>
+  </g>
+  <path d="M 50 46 Q 56 38 49 34" fill="none" stroke="#a8703a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 40 58 Q 44 55 48 57" fill="none" stroke="#d6a26b" stroke-width="3" stroke-linecap="round"/>
+  <g fill="none" stroke="#9bd16b" stroke-width="3.5" stroke-linecap="round">
+    <path d="M 30 30 q 6 -6 0 -12 q -6 -6 0 -12"/><path d="M 70 30 q 6 -6 0 -12 q -6 -6 0 -12"/>
+  </g>`);
+
+export const CAMARA = svg(`
+  <rect x="8" y="28" width="84" height="58" rx="14" fill="#7cc7ff" stroke="#3f8fd0" stroke-width="5"/>
+  <path d="M 32 28 L 38 16 L 62 16 L 68 28 Z" fill="#7cc7ff" stroke="#3f8fd0" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="50" cy="57" r="20" fill="#ffffff" stroke="#3f8fd0" stroke-width="5"/>
+  <circle cx="50" cy="57" r="10" fill="#3d2b4f"/><circle cx="46" cy="53" r="3.5" fill="#ffffff"/>
+  <circle cx="80" cy="40" r="5" fill="#ffd84d"/>`);
+
+export const ALBUM = svg(`
+  <rect x="14" y="20" width="56" height="62" rx="6" fill="#ffffff" stroke="#c9b6e8" stroke-width="5" transform="rotate(-10 42 51)"/>
+  <rect x="30" y="16" width="56" height="62" rx="6" fill="#ffffff" stroke="#b49cff" stroke-width="5" transform="rotate(8 58 47)"/>
+  <g transform="rotate(8 58 47)">
+    <rect x="37" y="23" width="42" height="36" rx="3" fill="#bfe8ff"/>
+    <circle cx="66" cy="33" r="6" fill="#ffd84d"/>
+    <path d="M 37 59 L 50 44 L 60 54 L 66 48 L 79 59 Z" fill="#8fdcc0"/>
+  </g>`);
+
+export const CERRAR = svg(`
+  <path d="M 28 28 L 72 72 M 72 28 L 28 72" stroke="#ffffff" stroke-width="12" stroke-linecap="round"/>`);
 
 export const MANITA = svg(`
   <path d="M 30 12 Q 30 3 37 3 Q 44 3 44 12 L 44 42 L 50 40 Q 57 38 59 45 L 64 43 Q 71 41 73 48 L 77 47

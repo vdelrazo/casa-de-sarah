@@ -89,6 +89,13 @@ const PANAL = `
   <rect x="-94" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/><rect x="70" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/>
   <path d="M -20 -40 C -26 -46 -32 -50 -32 -56 C -32 -61 -25 -63 -20 -57 C -15 -63 -8 -61 -8 -56 C -8 -50 -14 -46 -20 -40 Z" fill="#ffc4dc"/>`;
 
+// Pañal sucio: amarillento, con una manchita café asomándose.
+const PANAL_SUCIO = `
+  <path d="M -88 -80 Q 0 -60 88 -80 L 100 -36 Q 76 4 0 8 Q -76 4 -100 -36 Z" fill="#f6e9c4" stroke="#cdb57a" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="-94" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/><rect x="70" y="-80" width="24" height="16" rx="5" fill="#9ad8ff"/>
+  <path d="M -30 -72 Q -10 -62 6 -72 Q 20 -64 34 -72 Q 26 -52 0 -50 Q -24 -52 -30 -72 Z" fill="#a8743f" opacity="0.75"/>
+  <path d="M -20 -40 C -26 -46 -32 -50 -32 -56 C -32 -61 -25 -63 -20 -57 C -15 -63 -8 -61 -8 -56 C -8 -50 -14 -46 -20 -40 Z" fill="#d9c08d"/>`;
+
 const BABERO = `
   <path d="M -62 -200 Q 0 -176 62 -200 L 70 -128 Q 0 -86 -70 -128 Z" fill="#ffffff" stroke="#e58fb4" stroke-width="4" stroke-linejoin="round"/>
   <path d="M -60 -126 Q 0 -94 60 -126" fill="none" stroke="#ff9fc4" stroke-width="4" stroke-dasharray="3 8" stroke-linecap="round"/>
@@ -148,10 +155,11 @@ export function crearBebe(contenedor) {
 
   let puesto = {};
   let modo = 'puesta';
+  let panal = 'limpio';   // en el cambiador: 'limpio', 'sucio' o 'ninguno'
   let conBabero = false;
 
   function dibujarRopa() {
-    const desnudo = modo === 'nada' || modo === 'toalla';
+    const desnudo = modo === 'nada' || modo === 'toalla' || modo === 'panal';
     const dibujo = (lugar) => {
       const p = !desnudo && prendaPorId(puesto[lugar]);
       return p ? p.dibujo() : {};
@@ -163,7 +171,8 @@ export function crearBebe(contenedor) {
     parte('ropa-torso').innerHTML = ropa.torso || '';
     parte('ropa-piernas').innerHTML = ropa.piernas || '';
     parte('ropa-mangas').innerHTML = ropa.mangas || '';
-    parte('panal').innerHTML = modo !== 'nada' && !ropa.torso ? PANAL : '';
+    if (modo === 'panal') parte('panal').innerHTML = { limpio: PANAL, sucio: PANAL_SUCIO }[panal] || '';
+    else parte('panal').innerHTML = modo !== 'nada' && !ropa.torso ? PANAL : '';
     parte('pies').innerHTML = pies.pies || '';
     // Si trae algo en la cabeza, se quita la capucha del disfraz.
     parte('capucha').innerHTML = modo === 'toalla' ? TOALLA.capucha : (!cabeza.sombrero && ropa.capucha) || '';
@@ -192,7 +201,14 @@ export function crearBebe(contenedor) {
       dibujarRopa();
     },
 
-    /** 'puesta' (su ropa), 'nada' (en la tina), 'toalla' o 'cobija' (acostado en la cuna). */
+    /** Pañal en el cambiador: 'limpio', 'sucio' o 'ninguno'. Solo se ve en modo 'panal'. */
+    panal(estado) {
+      panal = estado;
+      dibujarRopa();
+    },
+
+    /** 'puesta' (su ropa), 'nada' (en la tina), 'toalla', 'panal' (sin ropa, en el cambiador)
+     *  o 'cobija' (acostado en la cuna). */
     modo(m) {
       modo = m;
       dibujarRopa();

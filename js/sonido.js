@@ -136,6 +136,20 @@ export function eructo() {
   soplo({ dur: 0.4, frec: 300, tipo: 'lowpass', vol: 0.12 });
 }
 
+/** "Pfff": pedito de caricatura cuando el pañal está sucio. */
+export function pedo() {
+  tono({ frec: 140, hasta: 90, dur: 0.45, tipo: 'sawtooth', vol: 0.18, vibrato: 30, filtro: 420 });
+  soplo({ dur: 0.35, frec: 250, tipo: 'lowpass', vol: 0.1 });
+}
+
+/** Carcajada de "¿dónde está el bebé?": más larga y aguda que la risita. */
+export function carcajada() {
+  for (let i = 0; i < 9; i++) {
+    const f = 1300 - i * 40 + (i % 2) * 180;
+    tono({ frec: f, hasta: f * 1.35, inicio: i * 0.09, dur: 0.07, vol: 0.15, tipo: 'triangle' });
+  }
+}
+
 /** Palmadita en la espalda. */
 export const palmada = () => soplo({ dur: 0.07, frec: 700, tipo: 'lowpass', vol: 0.35 });
 
@@ -148,6 +162,35 @@ export const frotar = () => soplo({ dur: 0.12, frec: 900, vol: 0.07, q: 0.6 });
 export const click = () => tono({ frec: 1800, hasta: 1200, dur: 0.03, tipo: 'square', vol: 0.06 });
 export const tomar = () => tono({ frec: 700, hasta: 1000, dur: 0.07, vol: 0.12 });
 export const boton = () => tono({ frec: 420, hasta: 760, dur: 0.09, vol: 0.16 });
+
+/** El pañal cae al bote. */
+export function boing() {
+  tono({ frec: 180, hasta: 620, dur: 0.18, tipo: 'triangle', vol: 0.16 });
+  tono({ frec: 620, hasta: 300, inicio: 0.18, dur: 0.2, tipo: 'triangle', vol: 0.12 });
+}
+
+/** Polvito de talco. */
+export const talco = () => soplo({ dur: 0.18, frec: 4000, vol: 0.05, q: 0.5 });
+
+/** Sonaja: cascabeles cortitos. */
+export function sonaja() {
+  for (let i = 0; i < 3; i++) {
+    tono({ frec: 2400 + Math.random() * 900, inicio: i * 0.045, dur: 0.06, tipo: 'square', vol: 0.035, filtro: 5000 });
+    soplo({ inicio: i * 0.045, dur: 0.05, frec: 5000, vol: 0.05, q: 2 });
+  }
+}
+
+/** La pelota rebota. */
+export const rebote = () => tono({ frec: 220, hasta: 110, dur: 0.16, tipo: 'sine', vol: 0.25 });
+
+/** Zumbido de la mosquita que sale volando. */
+export const zumbido = () => tono({ frec: 260, hasta: 420, dur: 0.4, tipo: 'sawtooth', vol: 0.05, vibrato: 40, filtro: 1500 });
+
+/** Cámara: "clic-chas". */
+export function obturador() {
+  tono({ frec: 2200, hasta: 1400, dur: 0.03, tipo: 'square', vol: 0.08 });
+  soplo({ inicio: 0.04, dur: 0.14, frec: 3000, vol: 0.14, q: 0.7 });
+}
 
 export function patito() {
   tono({ frec: 950, hasta: 1500, dur: 0.09, tipo: 'square', vol: 0.06, filtro: 2500 });

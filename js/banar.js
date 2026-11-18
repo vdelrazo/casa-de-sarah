@@ -1,6 +1,8 @@
 // Bañar: el bebé llega con lodo. El jabón hace espuma y quita el lodo, la regadera
 // quita la espuma y la toalla lo seca. El patito suena y las pompas se revientan.
 
+import { soltarPompa, reventarPompa } from './pompas.js';
+
 const NS = 'http://www.w3.org/2000/svg';
 // Manchas de lodo (coordenadas del bebé), todas arriba del agua para que se alcancen.
 const LODO = [[-52, -356], [66, -262], [-108, -152], [40, -150], [-36, -128], [110, -150]];
@@ -32,7 +34,7 @@ function enjabonar(p, ctx) {
     e.ultimaEspuma = l;
     if (ctx.bebe.cuantaEspuma() < 90) ctx.bebe.agregarEspuma(l[0] + entre(-6, 6), l[1] + entre(-6, 6));
     sonar('tallar', 90, ctx);
-    if (Math.random() < 0.15) soltarPompa(p, ctx);
+    if (Math.random() < 0.15) soltarPompa(ctx.grupo('efectos'), p);
   }
   let cambio = false;
   for (const m of e.lodo) {
@@ -93,38 +95,6 @@ function secar(p, ctx) {
   }
 }
 
-// ---------- Pompas de jabón que suben ----------
-
-function soltarPompa(p, ctx) {
-  const r = entre(10, 18);
-  const c = document.createElementNS(NS, 'circle');
-  c.setAttribute('class', 'pompa');
-  c.setAttribute('cx', p[0].toFixed(1));
-  c.setAttribute('cy', p[1].toFixed(1));
-  c.setAttribute('r', r.toFixed(1));
-  ctx.grupo('efectos').append(c);
-  const dx = entre(-60, 60);
-  const animacion = c.animate([
-    { transform: 'translate(0, 0)', opacity: 0.95 },
-    { transform: `translate(${dx * 0.6}px, -120px)`, opacity: 0.95, offset: 0.6 },
-    { transform: `translate(${dx}px, -220px)`, opacity: 0 },
-  ], { duration: entre(3000, 4200), easing: 'ease-out' });
-  animacion.onfinish = () => c.remove();
-}
-
-function reventarPompa(cliente, ctx) {
-  for (const c of ctx.grupo('efectos').querySelectorAll('.pompa')) {
-    const r = c.getBoundingClientRect();
-    const radio = r.width / 2 + 18;
-    if (Math.hypot(cliente.x - (r.left + r.width / 2), cliente.y - (r.top + r.height / 2)) < radio) {
-      c.remove();
-      ctx.sonido.pop();
-      return true;
-    }
-  }
-  return false;
-}
-
 // ---------- ¿Ya quedó limpio? ----------
 
 function revisar(ctx) {
@@ -179,7 +149,10 @@ export default {
       patito.classList.add('cuac');
       return;
     }
-    if (reventarPompa(cliente, ctx)) return;
+    if (reventarPompa(ctx.grupo('efectos'), cliente)) {
+      ctx.sonido.pop();
+      return;
+    }
     if (ctx.bebe.contiene(ctx.aBebe(p))) ctx.cosquillas();
   },
 

@@ -1,20 +1,23 @@
 // Casa de Sarah: cuidar a un bebé. Aquí se arma la pantalla y se reparten los toques
-// a la actividad del momento (casa, comer, bañar, dormir).
+// a la actividad del momento (jugar, comer, pañal, bañar, vestir, dormir).
 
 import { crearBebe } from './bebe.js';
 import { dibujarFondo, LUGARES } from './escenas.js';
 import { ICONO_ACTIVIDAD, HERRAMIENTAS, MANITA, ESTRELLA, SOL } from './iconos.js';
 import { prendaPorId, ROPA_INICIAL } from './ropa-bebe.js';
+import { pompaEn } from './pompas.js';
 import * as sonido from './sonido.js';
-import casa from './casa.js';
+import jugar from './jugar.js';
 import comer from './comer.js';
+import panal from './panal.js';
 import banar from './banar.js';
 import vestir from './vestir.js';
 import dormir from './dormir.js';
 
-const ACTIVIDADES = { casa, comer, banar, vestir, dormir };
-const BARRA = ['casa', 'comer', 'banar', 'vestir', 'dormir'];
-const CICLO = ['comer', 'banar', 'vestir', 'dormir'];   // lo que el bebé va pidiendo, en orden
+const ACTIVIDADES = { jugar, comer, panal, banar, vestir, dormir };
+const BARRA = ['jugar', 'comer', 'panal', 'banar', 'vestir', 'dormir'];
+// Lo que el bebé va pidiendo, en orden, como un día de bebé.
+const CICLO = ['comer', 'panal', 'banar', 'vestir', 'jugar', 'dormir'];
 const CLAVE = 'casa-de-sarah.bebe';
 const ESPERA_PISTA = 6000;   // ms sin tocar nada antes de que salga la manita
 const LEVANTAR = 36;          // la herramienta va un poco arriba del dedo, para que se vea
@@ -88,6 +91,9 @@ const ctx = {
     const b = LUGARES[actual.id].bebe;
     return [x + b.x, y + b.y];
   },
+  aEscena,
+  aPantalla: (p) => aPantalla(p),
+  corazones: (p) => lanzarChispas(aPantalla(p), 'corazon'),
   grupo: (id) => escena.querySelector(`#${id}`) || escena.querySelector(`.${id}`),
   refrescarHerramienta,
   terminar,
@@ -299,7 +305,8 @@ escena.addEventListener('pointerdown', (e) => {
   tocoAlgo();
   if (toque || fantasma) return;
   const p = aEscena(e.clientX, e.clientY);
-  if (globo && Math.hypot(p[0] - globo.x, p[1] - globo.y) < 80) {
+  // La burbuja de pedidos lleva a lo que pide (salvo que haya una pompa de jabón encima).
+  if (globo && Math.hypot(p[0] - globo.x, p[1] - globo.y) < 80 && !pompaEn($('efectos'), cliente(e))) {
     sonido.boton();
     irA(estado.pide);
     return;
@@ -462,7 +469,7 @@ function dibujarGlobo() {
 }
 
 // Cada ratito el bebé "recuerda" lo que quiere: la burbuja brinca y balbucea.
-// Si lleva mucho esperando en la casa, hace un pucherito (nunca llora fuerte).
+// Si lleva mucho esperando en el tapete, hace un pucherito (nunca llora fuerte); si pide pañal, "pfff".
 setInterval(() => {
   if (!jugando || !globo || toque || fantasma) return;
   const g = $('globo').firstElementChild;
@@ -470,7 +477,9 @@ setInterval(() => {
   g?.getBoundingClientRect();
   g?.classList.add('brinca');
   const esperando = performance.now() - pidioDesde;
-  if (actual.id === 'casa' && esperando > 40000 && Math.random() < 0.5) {
+  if (estado.pide === 'panal' && Math.random() < 0.5) {
+    sonido.pedo();   // "pfff": ya necesita cambio de pañal
+  } else if (actual.id === 'jugar' && esperando > 40000 && Math.random() < 0.5) {
     bebe.expresion('tristes', 'puchero', 1800);
     sonido.puchero();
   } else {
@@ -534,6 +543,10 @@ function mostrarManita(p = pistaActual()) {
   } else if (p.tocar || p.elemento) {
     const q = p.tocar ? aPantalla(p.tocar) : centro(document.querySelector(p.elemento));
     cuadros = [en({ x: q.x + 40, y: q.y + 60 }, { o: 0 }), en(q), en(q, { s: 0.8 }), en(q), en(q, { s: 0.8 }), en(q, { o: 0 })];
+  } else if (p.arrastrar) {
+    // Arrastrar algo de la escena (el pañal sucio al bote).
+    const [a, b] = p.arrastrar.map(aPantalla);
+    cuadros = [en(a, { o: 0 }), en(a), en(a, { s: 0.85 }), en(b, { s: 0.85 }), en(b, { s: 0.85 }), en(b, { o: 0 })];
   } else if (p.mecer) {
     const q = aPantalla(p.mecer);
     const izq = { x: q.x - 80, y: q.y };
@@ -588,7 +601,7 @@ document.addEventListener('contextmenu', (e) => e.preventDefault());
 armarBarra();
 mostrarEstrellas(false);
 bebe.vestir(estado.ropa);
-irA('casa');
+irA('jugar');
 
 if (new URLSearchParams(location.search).has('depurar')) {
   window.__juego = {

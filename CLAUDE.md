@@ -33,18 +33,21 @@ actualízala aquí.
   no se enferma y no hay "game over".
 
 ### Cómo se juega
-- Abajo hay botones grandes con dibujos: casa, comer, bañar, vestir y dormir (después: pañal y jugar).
-  Se puede ir a cualquiera cuando se quiera.
-- **El bebé pide cosas** con una burbuja con dibujo (biberón, patito, mameluco, luna). El botón de
-  lo que pide late. Tocar la burbuja lleva directo a esa actividad.
-  Pide en ciclo: comer → bañar → vestir → dormir → comer…
+- Abajo hay botones grandes con dibujos: jugar, comer, pañal, bañar, vestir y dormir.
+  Se puede ir a cualquiera cuando se quiera. (El botón de "casa" se volvió "jugar" el 2026-11-18.)
+- **El bebé pide cosas** con una burbuja con dibujo (biberón, pañal, patito, mameluco, sonaja, luna).
+  El botón de lo que pide late. Tocar la burbuja lleva directo a esa actividad.
+  Pide en ciclo, como un día de bebé: comer → pañal → bañar → vestir → jugar → dormir → comer…
 - Las herramientas de cada actividad están a un lado (o arriba, con el iPad parado) y se
   **arrastran con el dedo** hasta el bebé. La que toca usar brilla, y si la niña no hace nada
   unos segundos, una manita le muestra el movimiento.
 - Cada actividad terminada da una **estrellita** (se guardan en el iPad) y el bebé se ríe.
 
 ### Actividades
-- **Casa:** el bebé en su tapete. Si se le toca, le dan cosquillas y se ríe.
+- **Jugar** (su tapete): mantita para "¿dónde está el bebé?" (se le pone en la cara y al tocarla
+  sale volando y el bebé se carcajea), burbujero (al moverlo salen burbujas que se revientan),
+  sonaja (suena al moverla; si se suelta en el bebé, la agarra y la sacude) y la pelota del
+  tapete rebota si se toca. Estrella al hacer 3 juegos distintos. Cosquillas al tocar al bebé.
 - **Comer** (silla alta, con babero): la cuchara se llena en el plato y se lleva a la boca
   (4 cucharadas; a veces se embarra la cara y se limpia con la servilleta). Luego el biberón:
   se sostiene en la boca hasta que se vacía. Al final, palmaditas en la espalda hasta que eructa.
@@ -61,7 +64,17 @@ actualízala aquí.
 - **Dormir** (moisés): se mece la cuna arrastrando el dedo de lado a lado; cada mecida toca la
   canción de cuna y le da más sueño (bosteza, se le cierran los ojos). El chupón ayuda.
   Ya dormido, se apaga la lámpara. Un sol grande lo despierta.
-- **Pañal** (fase 2): con popó de caricatura. Quitar el sucio, limpiar, talco, pañal nuevo.
+- **Pañal** (cambiador, sin ropa mientras tanto): el pañal sucio tiene rayitas de olor y una mosquita
+  (que se espanta si se toca). Se jala el pañal del bebé y vuela solo al bote, enseñando la
+  **popó de caricatura**. Luego toallitas para limpiar las manchitas, talco (opcional) y el pañal
+  limpio, que no se pone hasta que esté limpio (si no, el bebé hace pucherito y la pista guía).
+  Estrella al ponerle el pañal limpio. Cuando el bebé pide pañal, a veces hace "pfff".
+
+### Cámara y álbum
+- Arriba a la izquierda, junto a las estrellas: botón de **cámara** (en cualquier lugar) y de
+  **álbum**. La foto es la escena como se ve (fondo, muebles y bebé), con flash y sonido.
+- El álbum muestra las fotos en marquitos; tocar una la agranda. Se guardan las últimas 24 en el
+  iPad (`localStorage`, JPG chicas). No se borran desde el juego.
 
 ### Estilo
 - **Caricatura dibujada en el código** (SVG): contornos suaves, colores pastel, cabeza grande.
@@ -71,16 +84,19 @@ actualízala aquí.
 ## Decisiones técnicas
 
 - **HTML + JavaScript (módulos ES) + SVG**, sin paso de compilación: lo que está en `main` es lo que se publica.
-- El fondo de cada lugar es un SVG de 1000 × 1000 que se recorta para llenar la pantalla (`js/escenas.js`).
+- El fondo de cada lugar es un SVG de 1600 × 1000 que se recorta para llenar la pantalla (`js/escenas.js`).
 - El bebé y los muebles van en otro SVG de 600 × 640 (`#escena`), así la tina, la silla
   y la cuna siempre coinciden con el bebé. El bebé (`js/bebe.js`) se dibuja con el punto
   (0, 0) entre sus pompis; cada lugar lo coloca con `translate`.
-- Cada actividad es un módulo (`js/casa.js`, `js/comer.js`, `js/banar.js`, `js/vestir.js`,
-  `js/dormir.js`) con la misma forma: `entrar`, `salir`, `alMover` / `alSoltar` (herramienta
+- Cada actividad es un módulo (`js/jugar.js`, `js/comer.js`, `js/panal.js`, `js/banar.js`,
+  `js/vestir.js`, `js/dormir.js`) con la misma forma: `entrar`, `salir`, `alMover` / `alSoltar` (herramienta
   arrastrada), `alTocar` / `alArrastrar` (toques en la escena) y `pista` (qué sugerir).
   `vestir` dibuja su propio ropero con `panel` en lugar de herramientas.
 - La ropa del bebé está en `js/ropa-bebe.js`; cada prenda regresa sus partes (torso, piernas,
   mangas, capucha, sombrero, pies) en coordenadas del bebé. `bebe.js` las pone en su capa.
+- Las pompas de jabón (baño y burbujero) están en `js/pompas.js`.
+- La cámara (`js/camara.js`) copia los dos SVG con sus estilos ya calculados, los dibuja en un
+  canvas y guarda un JPG.
 - Sonidos generados con Web Audio, sin archivos de audio. iOS no suena hasta el primer toque:
   el ▶ de la pantalla de inicio desbloquea el audio.
 - Lo que se guarda en el iPad (`localStorage`): estrellas, qué está pidiendo el bebé y su ropa.
@@ -91,10 +107,10 @@ actualízala aquí.
 
 1. **Bebé, comer, bañar y dormir**, con burbuja de pedidos, pistas y estrellas. *Hecha el 2026-11-18.*
 2. **Vestir al bebé** arrastrando la ropa. *Hecha el 2026-11-18.*
-3. **Pañal y jugar** (sonaja, "¿dónde está el bebé?", burbujas).
-4. **Escoger su bebé:** tono de piel, pelito, niño o niña.
-5. **Álbum de estampas** y salir a pasear en carriola.
-6. **Instalable:** PWA sin internet y música.
+3. **Pañal, jugar y cámara** con álbum. *Hechas el 2026-11-18.*
+4. Ideas pendientes (2026-11-18): regalo sorpresa cada 5 estrellas, escoger su bebé (piel, pelito,
+   niño o niña), doctor de curitas, peinados de espuma en el baño, cocinar la papilla, paseo en carriola.
+5. **Instalable:** PWA sin internet y música.
 
 ## Preguntas abiertas
 

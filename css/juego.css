@@ -122,8 +122,8 @@ button { font: inherit; color: inherit; cursor: pointer; padding: 0; touch-actio
 }
 
 .actividad {
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   display: grid;
   place-items: center;
   border: 6px solid #ffd0e3;
@@ -590,6 +590,58 @@ button { font: inherit; color: inherit; cursor: pointer; padding: 0; touch-actio
 @keyframes brinca {
   40% { transform: scale(1.15) translateY(-8px); }
 }
+
+/* Pañal: rayitas de olor, mosquita, talco y la tapa del bote */
+.olor-linea {
+  fill: none;
+  stroke: #9bd16b;
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: olor 1.8s ease-out infinite;
+}
+
+@keyframes olor {
+  0% { opacity: 0; transform: translateY(10px); }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(-40px); }
+}
+
+.mosca .alas {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: aletear 0.08s linear infinite alternate;
+}
+
+@keyframes aletear {
+  to { transform: scaleY(0.4); }
+}
+
+.polvo { fill: #ffffff; stroke: #f0eef6; stroke-width: 2; }
+
+#bote .tapa {
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+}
+
+/* Jugar: la mantita sale volando, la sonaja se sacude en la mano, la pelota rebota */
+.manta-cara {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.agitar {
+  transform-box: fill-box;
+  transform-origin: 85% 85%;
+  animation: agitar 0.2s ease-in-out 8 alternate;
+}
+
+@keyframes agitar {
+  from { transform: rotate(-18deg); }
+  to { transform: rotate(18deg); }
+}
+
+#pelota .rebota { transform-box: fill-box; }
 
 /* ---------- Pantalla de inicio ---------- */
 
