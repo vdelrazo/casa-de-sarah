@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Casa de Sarah">
+  <meta name="theme-color" content="#ffe6f1">
+  <link rel="apple-touch-icon" href="img/icono-180.png">
+  <link rel="icon" href="img/icono-180.png">
+  <title>Casa de Sarah</title>
+  <link rel="stylesheet" href="css/juego.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <div id="juego">
+    <!-- El cuarto con la muñeca -->
+    <div id="escenario">
+      <svg id="cuarto" aria-hidden="true"></svg>
+      <svg id="muneca" aria-label="Muñeca"></svg>
+      <div id="chispas" aria-hidden="true"></div>
+
+      <button id="btn-dado" class="boton" aria-label="Ropa sorpresa">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="18" y="18" width="64" height="64" rx="16" fill="#fff"/>
+          <circle cx="36" cy="36" r="7" fill="#8a5cf6"/><circle cx="64" cy="36" r="7" fill="#8a5cf6"/>
+          <circle cx="50" cy="50" r="7" fill="#ff6fb3"/>
+          <circle cx="36" cy="64" r="7" fill="#8a5cf6"/><circle cx="64" cy="64" r="7" fill="#8a5cf6"/>
+          <path d="M 86 4 L 89 13 L 98 16 L 89 19 L 86 28 L 83 19 L 74 16 L 83 13 Z" fill="#ffe066"/>
+        </svg>
+      </button>
+
+      <button id="btn-quitar" class="boton" aria-label="Quitar toda la ropa">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M 41 30 A 9 9 0 1 1 50 39 L 50 46 M 50 46 L 88 74 Q 92 80 84 80 L 16 80 Q 8 80 12 74 Z"
+            fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- El ropero: cajones arriba (o a un lado) y prendas -->
+    <div id="ropero">
+      <div id="pestanas"></div>
+      <div id="prendas"></div>
+    </div>
+  </div>
+
+  <!-- Pantalla de inicio: el ▶ también desbloquea el audio y la voz en iOS -->
+  <div id="inicio">
+    <h1 id="titulo">Casa de Sarah</h1>
+    <button id="btn-jugar" class="boton" aria-label="Jugar" hidden>
+      <svg viewBox="0 0 100 100" aria-hidden="true"><path d="M 36 22 L 78 50 L 36 78 Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</body>
+</html>

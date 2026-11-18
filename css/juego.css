@@ -1,0 +1,396 @@
+/* Todo pensado para dedos chicos: botones de 80 px o más y bien separados. */
+
+:root {
+  --piel: #f9d0b0;
+  --piel-borde: #d6977a;
+  --pelo: #6e3f2b;
+  --pelo-borde: #452518;
+  --base: #efe2ff;
+  --base-borde: #b49cd9;
+
+  --tinta: #6b2d5c;
+  --sombra: 0 6px 0 rgba(107, 45, 92, 0.2);
+  --orilla: 16px;
+  --hueco: 12px;
+  --pestana: 84px;
+  /* Horizontal: 3 columnas × 3 filas de prendas. */
+  --celda: min(130px, calc((100dvh - 2 * var(--orilla) - 2 * var(--hueco)) / 3));
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #ffe6f1;
+  font-family: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+  /* Sin zoom, sin seleccionar texto y sin el menú de "mantener presionado" de iOS. */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+}
+
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------- Acomodo: cuarto a la izquierda, ropero a la derecha ---------- */
+
+#juego {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+#escenario {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+#cuarto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#ropero {
+  display: flex;
+  gap: var(--hueco);
+  padding: calc(env(safe-area-inset-top) + var(--orilla)) calc(env(safe-area-inset-right) + var(--orilla))
+    calc(env(safe-area-inset-bottom) + var(--orilla)) var(--orilla);
+  background: var(--fondo-cajon, #fff4fa);
+  border-left: 8px solid var(--color-cajon, #ffc4e1);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+#pestanas {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--hueco);
+}
+
+#prendas {
+  display: grid;
+  grid-template-columns: repeat(3, var(--celda));
+  grid-auto-rows: var(--celda);
+  gap: var(--hueco);
+  align-content: center;
+}
+
+/* Vertical: cuarto arriba, ropero abajo con 5 columnas × 2 filas. */
+@media (orientation: portrait) {
+  :root { --celda: min(140px, calc((100vw - 2 * var(--orilla) - 4 * var(--hueco)) / 5)); }
+  #juego {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  #ropero {
+    flex-direction: column;
+    align-items: center;
+    padding: var(--orilla) calc(env(safe-area-inset-right) + var(--orilla))
+      calc(env(safe-area-inset-bottom) + var(--orilla)) calc(env(safe-area-inset-left) + var(--orilla));
+    border-left: none;
+    border-top: 8px solid var(--color-cajon, #ffc4e1);
+  }
+  #pestanas { flex-direction: row; }
+  #prendas { grid-template-columns: repeat(5, var(--celda)); }
+}
+
+/* ---------- Botones ---------- */
+
+.boton {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  box-shadow: var(--sombra);
+  touch-action: none;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.boton svg {
+  width: 62%;
+  height: 62%;
+  pointer-events: none;
+}
+
+.boton:active {
+  transform: translateY(4px) scale(0.95);
+  box-shadow: 0 2px 0 rgba(107, 45, 92, 0.2);
+}
+
+#btn-dado,
+#btn-quitar {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(env(safe-area-inset-bottom) + var(--orilla));
+  width: 96px;
+  height: 96px;
+}
+
+#btn-dado {
+  left: calc(env(safe-area-inset-left) + var(--orilla));
+  background: #a77bff;
+}
+
+#btn-quitar {
+  right: var(--orilla);
+  background: #4fb8f5;
+}
+
+@media (orientation: portrait) {
+  #btn-dado, #btn-quitar { bottom: var(--orilla); }
+  #btn-quitar { right: calc(env(safe-area-inset-right) + var(--orilla)); }
+}
+
+/* Cajones del ropero */
+.pestana {
+  width: var(--pestana);
+  height: var(--pestana);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 5px solid #fff;
+  border-radius: 50%;
+  background: var(--color);
+  box-shadow: var(--sombra);
+  opacity: 0.6;
+  transform: scale(0.88);
+  transition: transform 0.12s, opacity 0.12s;
+  touch-action: none;
+}
+
+.pestana svg { width: 66%; height: 66%; pointer-events: none; }
+
+.pestana.activa {
+  opacity: 1;
+  transform: scale(1.06);
+  border-color: var(--tinta);
+}
+
+/* Prendas del ropero */
+.prenda {
+  width: var(--celda);
+  height: var(--celda);
+  padding: 8px;
+  position: relative;
+  border: 5px solid #fff;
+  border-radius: 28px;
+  background: #fff;
+  box-shadow: var(--sombra);
+  touch-action: none;
+  transition: transform 0.08s;
+}
+
+.prenda svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.prenda.apretada { transform: scale(0.94); }
+
+/* En el ropero no se dibuja la mano que sostiene la bolsa, la varita, etc. */
+.prenda .piel,
+.fantasma .piel { display: none; }
+
+/* La que ya trae puesta: orilla dorada y palomita. */
+.prenda.puesta {
+  border-color: #ffb703;
+  background: #fff7dc;
+}
+
+.prenda.puesta::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #ffb703 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 72% no-repeat;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* La prenda que se arrastra con el dedo */
+.fantasma {
+  position: fixed;
+  z-index: 50;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 8px rgba(107, 45, 92, 0.3));
+}
+
+.fantasma svg { width: 100%; height: 100%; overflow: visible; }
+
+#escenario.recibir #muneca { filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 8px #ffd84d); }
+
+/* ---------- La muñeca ---------- */
+
+#muneca {
+  position: relative;
+  height: 94%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 1 / 2;
+  margin-bottom: 1%;
+  overflow: visible;
+}
+
+.piel {
+  fill: var(--piel);
+  stroke: var(--piel-borde);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.extremidad { fill: none; stroke: var(--piel); stroke-linecap: round; }
+.extremidad-borde { fill: none; stroke: var(--piel-borde); stroke-linecap: round; }
+
+.pelo {
+  fill: var(--pelo);
+  stroke: var(--pelo-borde);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.ceja { fill: none; stroke: var(--pelo-borde); stroke-width: 4; stroke-linecap: round; }
+.nariz { fill: none; stroke: var(--piel-borde); stroke-width: 3; stroke-linecap: round; }
+
+.base {
+  fill: var(--base);
+  stroke: var(--base-borde);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+/* Parpadeo */
+#muneca .ojos {
+  transform-box: view-box;
+  transform-origin: 150px 138px;
+  animation: parpadear 4.5s infinite;
+}
+
+@keyframes parpadear {
+  0%, 93%, 100% { transform: scaleY(1); }
+  96.5% { transform: scaleY(0.1); }
+}
+
+.ojos-felices, .boca-risa { display: none; }
+#muneca.riendo .ojos, #muneca.riendo .boca { display: none; }
+#muneca.riendo .ojos-felices, #muneca.riendo .boca-risa { display: inline; }
+
+/* Movimientos */
+#muneca .respirar,
+#muneca .animado {
+  transform-box: view-box;
+  transform-origin: 150px 570px;
+}
+
+#muneca .respirar { animation: respirar 3.2s ease-in-out infinite; }
+
+@keyframes respirar {
+  50% { transform: translateY(-3px) scaleY(1.008); }
+}
+
+#muneca .animado.saltar { animation: saltar 0.45s ease-out; }
+
+@keyframes saltar {
+  0% { transform: none; }
+  35% { transform: translateY(-24px); }
+  65% { transform: translateY(0) scale(1.03, 0.97); }
+  100% { transform: none; }
+}
+
+#muneca .animado.girar { animation: girar 0.6s ease-in-out; }
+
+@keyframes girar {
+  0% { transform: scaleX(1); }
+  35% { transform: scaleX(0) translateY(-16px); }
+  70% { transform: scaleX(-1) translateY(-8px); }
+  100% { transform: scaleX(1); }
+}
+
+#muneca .animado.cosquillas { animation: cosquillas 0.9s ease-in-out; }
+
+@keyframes cosquillas {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-5deg); }
+  30% { transform: rotate(5deg); }
+  45% { transform: rotate(-4deg); }
+  60% { transform: rotate(4deg); }
+  75% { transform: rotate(-2deg); }
+}
+
+/* Brillitos */
+#chispas {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.chispa {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  overflow: visible;
+}
+
+/* ---------- Pantalla de inicio ---------- */
+
+#inicio {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 214, 234, 0.94) 70%);
+}
+
+#titulo {
+  margin: 0;
+  font-size: clamp(52px, 9vw, 110px);
+  font-weight: 900;
+  color: #e0418f;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 5px 0 #fff, 0 10px 0 rgba(224, 65, 143, 0.25);
+}
+
+#btn-jugar {
+  width: 200px;
+  height: 200px;
+  background: #ff6fb3;
+  box-shadow: 0 10px 0 #c23c80;
+  animation: latir 1.4s ease-in-out infinite;
+}
+
+#btn-jugar:active { animation: none; box-shadow: 0 3px 0 #c23c80; }
+
+@keyframes latir {
+  50% { transform: scale(1.08); }
+}
