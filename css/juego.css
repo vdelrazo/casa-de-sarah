@@ -281,11 +281,47 @@ button { font: inherit; color: inherit; cursor: pointer; padding: 0; touch-actio
 
 /* ---------- Estrellas, sol, noche ---------- */
 
-#contador {
+/* Arriba a la izquierda: estrellas, cámara y álbum */
+#arriba {
   position: absolute;
   z-index: 3;
   top: calc(env(safe-area-inset-top) + var(--orilla));
   left: calc(env(safe-area-inset-left) + var(--orilla));
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+#btn-camara,
+#btn-album {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  background: #ffffff;
+}
+
+#btn-camara svg,
+#btn-album svg { width: 70%; height: 70%; }
+
+#btn-album .cuantas {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 16px;
+  background: #ff6fb3;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 32px;
+  text-align: center;
+}
+
+#btn-album.salta { animation: salta-contador 0.5s ease-out; }
+
+#contador {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -642,6 +678,96 @@ button { font: inherit; color: inherit; cursor: pointer; padding: 0; touch-actio
 }
 
 #pelota .rebota { transform-box: fill-box; }
+
+/* ---------- Cámara y álbum ---------- */
+
+#flash {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.foto-vuela {
+  position: fixed;
+  z-index: 65;
+  border: 8px solid #ffffff;
+  border-bottom-width: 24px;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+#album {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow-y: auto;
+  padding: calc(env(safe-area-inset-top) + 24px) calc(env(safe-area-inset-right) + 24px)
+    calc(env(safe-area-inset-bottom) + 24px) calc(env(safe-area-inset-left) + 24px);
+  background: rgba(255, 240, 248, 0.97);
+  touch-action: pan-y;
+}
+
+#btn-cerrar-album {
+  position: fixed;
+  z-index: 41;
+  top: calc(env(safe-area-inset-top) + var(--orilla));
+  right: calc(env(safe-area-inset-right) + var(--orilla));
+  width: 88px;
+  height: 88px;
+  background: #ff6fb3;
+}
+
+#fotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 30px;
+  padding: 90px 10px 20px;
+}
+
+/* Cada foto en su marquito, un poco chueco como fotos de verdad */
+.foto {
+  padding: 10px 10px 34px;
+  border: none;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(107, 45, 92, 0.18);
+  transform: rotate(var(--giro, 0deg));
+}
+
+.foto img { display: block; width: 100%; height: auto; border-radius: 3px; pointer-events: none; }
+
+#fotos .vacio {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 200px;
+  height: 200px;
+  margin-top: 10vh;
+  opacity: 0.35;
+}
+
+#fotos .vacio svg { width: 100%; height: 100%; }
+
+#foto-grande {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  background: rgba(60, 30, 60, 0.75);
+}
+
+#foto-grande img {
+  max-width: 88vw;
+  max-height: 78vh;
+  border: 16px solid #ffffff;
+  border-bottom-width: 56px;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
 
 /* ---------- Pantalla de inicio ---------- */
 

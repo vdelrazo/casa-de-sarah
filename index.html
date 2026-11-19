@@ -33,16 +33,29 @@
         <span class="astro" style="left:20%;top:32%;animation-delay:1.4s"></span>
       </div>
 
-      <div id="contador" aria-label="Estrellas"><span>0</span></div>
+      <!-- Arriba a la izquierda: estrellas, cámara y álbum -->
+      <div id="arriba">
+        <div id="contador" aria-label="Estrellas"><span>0</span></div>
+        <button id="btn-camara" class="boton" aria-label="Tomar foto"></button>
+        <button id="btn-album" class="boton" aria-label="Álbum de fotos"><span class="cuantas" hidden></span></button>
+      </div>
       <button id="btn-sol" class="boton" aria-label="Despertar" hidden></button>
       <div id="chispas" aria-hidden="true"></div>
     </div>
 
-    <!-- Lugares: casa, comer, bañar, dormir -->
+    <!-- Lugares: jugar, comer, pañal, bañar, vestir, dormir -->
     <nav id="barra"></nav>
   </div>
 
   <div id="manita" aria-hidden="true" hidden></div>
+  <div id="flash" aria-hidden="true"></div>
+
+  <!-- Álbum de fotos -->
+  <div id="album" hidden>
+    <button id="btn-cerrar-album" class="boton" aria-label="Cerrar álbum"></button>
+    <div id="fotos"></div>
+  </div>
+  <div id="foto-grande" hidden><img alt=""></div>
 
   <!-- Pantalla de inicio: el ▶ también desbloquea el audio en iOS -->
   <div id="inicio">

@@ -114,5 +114,7 @@ actualízala aquí.
 
 ## Preguntas abiertas
 
-- Probar la fase 1 en el iPad: ¿se entiende arrastrar las herramientas? ¿la manita ayuda?
+- Probar en el iPad: ¿se entiende arrastrar las herramientas? ¿la manita ayuda?
   ¿los sonidos del bebé dan risa o molestan?
+- **Cámara en Safari:** probada solo en Chrome de Windows. Revisar en el iPad que la foto salga
+  completa (colores, estampados, cara) y que el álbum se guarde al cerrar y abrir el juego.

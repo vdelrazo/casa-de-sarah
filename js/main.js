@@ -3,7 +3,8 @@
 
 import { crearBebe } from './bebe.js';
 import { dibujarFondo, LUGARES } from './escenas.js';
-import { ICONO_ACTIVIDAD, HERRAMIENTAS, MANITA, ESTRELLA, SOL } from './iconos.js';
+import { ICONO_ACTIVIDAD, HERRAMIENTAS, MANITA, ESTRELLA, SOL, CAMARA, ALBUM, CERRAR } from './iconos.js';
+import { tomarFoto, cargarFotos, guardarFotos } from './camara.js';
 import { prendaPorId, ROPA_INICIAL } from './ropa-bebe.js';
 import { pompaEn } from './pompas.js';
 import * as sonido from './sonido.js';
@@ -564,9 +565,111 @@ function mostrarManita(p = pistaActual()) {
 }
 
 setInterval(() => {
-  if (!jugando || manita || toque || fantasma) return;
+  if (!jugando || manita || toque || fantasma || !$('album').hidden) return;
   if (performance.now() - ultimoToque > ESPERA_PISTA) mostrarManita();
 }, 500);
+
+// ---------- Cámara y álbum ----------
+
+let fotos = cargarFotos();
+let tomando = false;
+
+function mostrarCuantas(saltar) {
+  const c = $('btn-album').querySelector('.cuantas');
+  c.hidden = !fotos.length;
+  c.textContent = fotos.length;
+  if (!saltar) return;
+  const b = $('btn-album');
+  b.classList.remove('salta');
+  void b.offsetWidth;
+  b.classList.add('salta');
+}
+
+/** La foto recién tomada vuela, en su marquito, hasta el botón del álbum. */
+function volarFoto(foto) {
+  const r = escena.getBoundingClientRect();
+  const destino = $('btn-album').getBoundingClientRect();
+  const ancho = Math.min(r.width * 0.55, 420);
+  const x = r.left + r.width / 2 - ancho / 2;
+  const y = r.top + r.height * 0.12;
+  const img = new Image();
+  img.src = foto;
+  img.className = 'foto-vuela';
+  img.style.width = `${ancho}px`;
+  img.style.left = `${x}px`;
+  img.style.top = `${y}px`;
+  document.body.append(img);
+  const dx = destino.left + destino.width / 2 - (x + ancho / 2);
+  const dy = destino.top + destino.height / 2 - (y + ancho / 2);
+  img.animate([
+    { transform: 'scale(0.9) rotate(0deg)', opacity: 0 },
+    { transform: 'scale(1) rotate(-4deg)', opacity: 1, offset: 0.2 },
+    { transform: 'scale(1) rotate(-4deg)', opacity: 1, offset: 0.5 },
+    { transform: `translate(${dx}px, ${dy}px) scale(0.12) rotate(-14deg)`, opacity: 0.7 },
+  ], { duration: 1500, easing: 'ease-in-out' }).onfinish = () => {
+    img.remove();
+    mostrarCuantas(true);
+  };
+}
+
+$('btn-camara').insertAdjacentHTML('afterbegin', CAMARA);
+$('btn-album').insertAdjacentHTML('afterbegin', ALBUM);
+$('btn-cerrar-album').innerHTML = CERRAR;
+
+$('btn-camara').addEventListener('click', async () => {
+  if (tomando || fantasma) return;
+  tomando = true;
+  tocoAlgo();
+  // ¡Sonríe para la foto! (si está dormido, se queda dormidito)
+  if (bebe.elemento.dataset.ojos !== 'dormidos') bebe.expresion('felices', 'risa', 900);
+  sonido.obturador();
+  $('flash').animate([{ opacity: 0.95 }, { opacity: 0 }], { duration: 450, easing: 'ease-out' });
+  try {
+    const foto = await tomarFoto({ fondo: $('fondo'), escena, noche: escenario.classList.contains('noche') });
+    fotos = guardarFotos([...fotos, foto]);
+    volarFoto(foto);
+  } catch (err) {
+    console.warn('No se pudo tomar la foto', err);
+  }
+  tomando = false;
+});
+
+function abrirAlbum() {
+  const caja = $('fotos');
+  caja.replaceChildren();
+  if (!fotos.length) caja.innerHTML = `<div class="vacio">${CAMARA}</div>`;
+  // La más nueva primero.
+  [...fotos].reverse().forEach((foto, i) => {
+    const b = document.createElement('button');
+    b.className = 'foto';
+    b.style.setProperty('--giro', `${((i * 37) % 7) - 3}deg`);
+    const img = new Image();
+    img.src = foto;
+    img.alt = '';
+    b.append(img);
+    b.addEventListener('click', () => {
+      sonido.boton();
+      $('foto-grande').querySelector('img').src = foto;
+      $('foto-grande').hidden = false;
+    });
+    caja.append(b);
+  });
+  $('album').hidden = false;
+  $('album').scrollTop = 0;
+}
+
+$('btn-album').addEventListener('click', () => {
+  tocoAlgo();
+  sonido.boton();
+  abrirAlbum();
+});
+$('btn-cerrar-album').addEventListener('click', () => {
+  sonido.boton();
+  $('album').hidden = true;
+});
+$('foto-grande').addEventListener('click', () => {
+  $('foto-grande').hidden = true;
+});
 
 // ---------- Botones sueltos ----------
 
@@ -600,6 +703,7 @@ document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 armarBarra();
 mostrarEstrellas(false);
+mostrarCuantas(false);
 bebe.vestir(estado.ropa);
 irA('jugar');
 
@@ -613,6 +717,7 @@ if (new URLSearchParams(location.search).has('depurar')) {
     manita: mostrarManita,
     aPantalla,
     deBebe: (p) => ctx.deBebe(p),
+    fotos: () => fotos,
   };
 }
 
